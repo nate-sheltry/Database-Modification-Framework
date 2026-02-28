@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 using BepInEx;
 using BepInEx.Logging;
 using Unity.VisualScripting;
+using BepInEx;
+using BepInEx.Logging;
+using Mono.Data.Sqlite;
+using Unity.VisualScripting;
 
 namespace Database_Modification_Framework
 {
@@ -40,13 +44,19 @@ namespace Database_Modification_Framework
         }
 
         //Code for running the SQL sent via mods.
-        private void SqlEvent(string database, string sql)
+        private void SqlEvent(Framework.SQLItem sqlItem)
         {
-            Database.UpdateBaseItemByID(database, sql);
+            Utils.Log.LogMessage("Framework performing SQL process.");
+            Database.UpdateBaseItemByID(sqlItem.database, sqlItem.sql);
+        }
+
+        public void Update()
+        {
+            Framework.InvokeSQL();
         }
 
         //Runs on Executable's exit/close
-        public void OnDisable()
+        public void OnApplicationQuit()
         {
             Setup.exit();
         }
@@ -56,6 +66,5 @@ namespace Database_Modification_Framework
         {
 
         }
-
     }
 }

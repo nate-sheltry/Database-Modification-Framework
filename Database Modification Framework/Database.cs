@@ -6,9 +6,102 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Database_Modification_Framework.Definitions;
+using Unity.VisualScripting;
+using System.Collections.ObjectModel;
 
 namespace Database_Modification_Framework
 {
+
+    internal static class DatabaseManager
+    {
+        private static Dictionary<string, IDbConnection> _connections = new Dictionary<string, IDbConnection>{ 
+            { Files.Main , null },
+            { Files.AI, null },
+            { Files.NonRegional, null }
+        };
+        public static IReadOnlyDictionary<string, IDbConnection> Connections => _connections;
+        private static string GetDatabaseConnectionString(string key)
+        {
+            string dbPath;
+            if (Utils.Databases == null)
+            {
+                Utils.Log.LogError($"Failed to intiialize databases");
+                return null;
+            }
+            Utils.Databases.TryGetValue(key, out dbPath);
+            if (dbPath == null)
+            {
+                Utils.Log.LogError($"Failed to find {key} database in Game Database Directory.");
+                return null;
+            }
+            dbPath = Path.Combine(Directories.databaseDir, dbPath);
+            Utils.Log.LogMessage(dbPath);
+            return $@"URI=file:{dbPath}";
+        }
+        private static IDbConnection EstablishConnection(string dbName)
+        {
+            string connectionString = GetDatabaseConnectionString(dbName);
+            if (connectionString == null)
+            {
+                Utils.Log.LogError($"Failed to get connection string to {dbName} database.");
+                return null;
+            }
+            try
+            {
+                Utils.Log.LogMessage(connectionString);
+                IDbConnection dbConnection = new SqliteConnection(connectionString);
+                return dbConnection;
+            }
+            catch (Exception ex)
+            {
+                Utils.Log.LogError($"Failed to open connection to {dbName} database. {ex.Message}");
+                return null;
+            }
+        }
+        public static void InitializeDb()
+        {
+            foreach(KeyValuePair<string, IDbConnection> kvp in _connections)
+            {
+                try
+                {
+                    _connections[kvp.Key] = EstablishConnection(kvp.Key);
+                    _connections[kvp.Key].Open();
+                }
+                catch (Exception ex)
+                {
+                    Utils.Log.LogError($"Failed to open Database: {kvp.Key}");
+                }
+            }
+        }
+        public static void CloseConnections()
+        {
+            {
+                foreach (KeyValuePair<string, IDbConnection> kvp in Connections)
+                {
+                    try
+                    {
+                        if (kvp.Value == null) continue;
+                        kvp.Value.Close();
+                        kvp.Value.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        Utils.Log.LogError($"Failed to close Database: {kvp.Key}");
+                    }
+                }
+            }
+        }
+        private static int ExecuteSQL(IDbConnection connection, string sql)
+        {
+            IDbCommand command = connection.CreateCommand();
+            command.CommandText = sql;
+            int changes = command.ExecuteNonQuery();
+            command.Dispose();
+            return changes;
+        }
+    }
+
     internal class Database
     {
         internal static string GetDatabaseConnectionString(string key)

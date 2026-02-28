@@ -10,7 +10,7 @@ using System.Linq.Expressions;
 
 namespace Database_Modification_Framework
 {
-    internal class Setup
+    internal static class Setup
     {
         public static Dictionary<string, string> initialize()
         {
