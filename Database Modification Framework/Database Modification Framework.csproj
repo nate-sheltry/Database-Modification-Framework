@@ -351,6 +351,7 @@
   <ItemGroup>
     <Compile Include="Database.cs" />
     <Compile Include="Database_test_mod1.cs" />
+    <Compile Include="Definitions\attribute_definitions.cs" />
     <Compile Include="Framework.cs" />
     <Compile Include="Setup.cs" />
     <Compile Include="Definitions\definitions.cs" />
