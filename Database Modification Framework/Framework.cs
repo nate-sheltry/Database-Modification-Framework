@@ -1,9 +1,12 @@
 ﻿using BepInEx;
 using BepInEx.Bootstrap;
 using Database_Modification_Framework.Definitions;
+using Mono.Data.Sqlite;
 using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,53 +16,134 @@ namespace Database_Modification_Framework
 {
     public static class Framework
     {
-        public struct SQLItem
-        {
-            public SQLItem(string db, string sqlString)
-            {
-                database = db;
-                sql = sqlString;
-            }
-            public string database { get; }
-            public string sql { get; }
-        }
-
-        // Perhaps make a specialized container of queues
-        // We'll sort SQL by databases in order to maximize performance.
-        //public class SQLQueue
+        //public struct SQLItem
         //{
-        //    public SQLQueue()
+        //    public SQLItem(string db, string sqlString)
         //    {
-
+        //        database = db;
+        //        sql = sqlString;
         //    }
+        //    public string database { get; }
+        //    public string sql { get; }
+        //    public string GetSQL;
         //}
 
-        public static event Action<SQLItem> SqlListener;
-        public static event Action OnDbModified;
-        public static Queue<SQLItem> SqlList = new Queue<SQLItem>();
+        //Perhaps make a specialized container of queues
+        //We'll sort SQL by databases in order to maximize performance.
+        public static class SQLQueue
+        {
+            private static Dictionary<string, Queue<ISQLItem>> dict = new Dictionary<string, Queue<ISQLItem>> { };
+            private static long _count = 0;
+            public static long Count { get => _count; }
 
+            public static void Initialize()
+            {
+                foreach(string db in DatabaseManager.Connections.Keys)
+                {
+                    dict.Add(db, new Queue<ISQLItem>());
+                }
+                Utils.Log.LogMessage($"SQLQueue finished loading Keys: {dict.Keys}");
+            }
+
+            public static void Enqueue(ISQLItem item)
+            {
+                try
+                {
+                    dict[item.Database].Enqueue(item);
+                    _count += 1;
+                }
+                catch (Exception ex)
+                {
+                    Utils.Log.LogError(ex);
+                }
+            }
+            private static ISQLItem Dequeue(Queue<ISQLItem> queue)
+            {
+                // Although we could avoid using a variable for potential memory
+                // savings. Doing things this way ensures our item was removed
+                // from the queue before changing the count variable.
+                ISQLItem item = queue.Dequeue();
+                _count -= 1;
+                return item;
+            }
+            public static void Enqueue(IEnumerable<ISQLItem> items)
+            {
+                foreach (ISQLItem item in items)
+                {
+                    try
+                    {
+                        dict[item.Database].Enqueue(item);
+                        _count += 1;
+                    }
+                    catch (Exception ex)
+                    {
+                        Utils.Log.LogError(ex);
+                    }
+                }
+            }
+            internal static void ProcessQueue()
+            {
+                List<ISQLItem> lists = new List<ISQLItem>();
+                List<string> keys = dict.Keys.ToList();
+                // Remove NonRegional from the List, because we want to prioritize
+                // non-regional modifications.
+                keys.Remove(Files.NonRegional);
+
+                Queue<ISQLItem> nonRegional;
+                while(lists.Count < Utils.MAX_TX)
+                {
+                    // select non-regional queued items first for batched operations.
+                    if (dict.TryGetValue(Files.NonRegional, out nonRegional))
+                    {
+                        while(nonRegional.Count > 0 && lists.Count < Utils.MAX_TX)
+                            lists.Add(Dequeue(nonRegional));
+                    }
+                    // select all other database items for batching.
+                    foreach (string key in keys)
+                    {
+                        Queue<ISQLItem> queue;
+                        if(!dict.TryGetValue(key, out queue))
+                        {
+                            Utils.Log.LogError($"Failed to acces commands for {key} database.");
+                            continue;
+                        }
+                        while(queue.Count > 0 && lists.Count < Utils.MAX_TX)
+                            lists.Add(Dequeue(queue));
+                    }
+                    break;
+                }
+                Database.ExecuteCommand(lists);
+                // Infrequent connections are closed here to avoid
+                // repeated and unnecessary database connection opens.
+                if (Count < 1)
+                {
+                    foreach(string key in DatabaseManager.Connections.Keys.ToList())
+                    {
+                        if (!DatabaseManager.freqDb.Contains(key))
+                            DatabaseManager.Connections[key].Close();
+                    }
+                }
+            }
+        }
+
+        public static event Action SqlListener;
         public static void QueueSQL(string database, string sql)
         {
-            SqlList.Enqueue(
-                new SQLItem(database, sql)
+            SQLQueue.Enqueue(
+                new RawSQLItem(database, sql)
                 );
         }
 
         public static void InvokeSQL()
         {
-            if (SqlList.Count == 0) return;
-
-            SqlListener?.Invoke(SqlList.Dequeue());
+            if (SQLQueue.Count < 1) return;
+            SqlListener?.Invoke();
         }
 
-        //public class Manager
-        //{
-        //    public void RegisterSQL(string modGUID, string id, string sql)
-        //    {
-
-        //    }
-
-        //}
+        public static void ExecuteQueuedCommands()
+        {
+            SQLQueue.ProcessQueue();
+        }
 
     }
 }

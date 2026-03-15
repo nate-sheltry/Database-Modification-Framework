@@ -1,18 +1,21 @@
-﻿using System;
+﻿using Database_Modification_Framework.Definitions;
+using Mono.Data.Sqlite;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine.Diagnostics;
-using Database_Modification_Framework.Definitions;
-using System.IO;
-using System.Linq.Expressions;
+using static Database_Modification_Framework.Framework;
 
 namespace Database_Modification_Framework
 {
     internal static class Setup
     {
-        public static Dictionary<string, string> initialize()
+        public static void initialize()
         {
             //exit will clean up any previous runtime leftovers in the case
             //we failed to clean up properly when the executable closed.
@@ -35,13 +38,17 @@ namespace Database_Modification_Framework
                     //For testing
                     Utils.Log.LogMessage(file.Replace(".db", ""));
                 }
-                return databases;
+                Utils.Databases = databases;
+                DatabaseManager.InitializeDb();
+                SQLQueue.Initialize();
+                return;
             }
             catch (Exception ex)
             {
                 Utils.Log.LogError($"Failed to initialize Database Framework: {ex.Message}");
             }
-            return null;
+            Utils.Log.LogError("Setup Failed: Encountered Fatal Error during Setup process.");
+            throw new Exception("Setup Failed: Encountered Fatal Error during Setup process.");
         }
 
         public static void exit()
@@ -51,6 +58,7 @@ namespace Database_Modification_Framework
                 return;
             try
             {
+                DatabaseManager.CloseConnections();
                 string[] files = Directory.GetFiles(Directories.backupDatabase) ??
                     throw new Exception(
                         $"Was unable to attain database files in: {Directories.backupDatabase}"

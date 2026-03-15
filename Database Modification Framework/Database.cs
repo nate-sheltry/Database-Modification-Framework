@@ -1,30 +1,33 @@
-﻿using Mono.Data.Sqlite;
+﻿using Database_Modification_Framework.Definitions;
+using Mono.Data.Sqlite;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Database_Modification_Framework.Definitions;
 using Unity.VisualScripting;
-using System.Collections.ObjectModel;
+using static Database_Modification_Framework.Framework;
 
 namespace Database_Modification_Framework
 {
 
     internal static class DatabaseManager
     {
-        private static Dictionary<string, IDbConnection> _connections = new Dictionary<string, IDbConnection>{ 
-            { Files.Main , null },
-            { Files.AI, null },
-            { Files.NonRegional, null }
+        private static Dictionary<string, IDbConnection> _connections = new Dictionary<string, IDbConnection>();
+        // Use Hashset for Frequent Database list because we can afford
+        // the overhead for setup and the reduce computation for lookup during runtime.
+        public static readonly HashSet<string> freqDb = new HashSet<string>{
+            Files.NonRegional,
         };
         public static IReadOnlyDictionary<string, IDbConnection> Connections => _connections;
         private static string GetDatabaseConnectionString(string key)
         {
-            string dbPath;
-            if (Utils.Databases == null)
+            string dbPath = null;
+            if (Utils.Databases is null)
             {
                 Utils.Log.LogError($"Failed to intiialize databases");
                 return null;
@@ -37,7 +40,7 @@ namespace Database_Modification_Framework
             }
             dbPath = Path.Combine(Directories.databaseDir, dbPath);
             Utils.Log.LogMessage(dbPath);
-            return $@"URI=file:{dbPath}";
+            return new SqliteConnectionStringBuilder { DataSource = dbPath }.ConnectionString;
         }
         private static IDbConnection EstablishConnection(string dbName)
         {
@@ -61,18 +64,39 @@ namespace Database_Modification_Framework
         }
         public static void InitializeDb()
         {
-            foreach(KeyValuePair<string, IDbConnection> kvp in _connections)
+            // Get all the database files
+            List<string> otherDbs = Utils.Databases.Keys.ToList();
+            // Go through our predetermined most often used databases
+            foreach(string key in freqDb)
             {
                 try
                 {
-                    _connections[kvp.Key] = EstablishConnection(kvp.Key);
-                    _connections[kvp.Key].Open();
+                    _connections.Add(key, EstablishConnection(key));
+                    // Establish a open connection and maintain it to reduce
+                    // computational cost during runtime for some slight overhead.
+                    _connections[key].Open();
+                    // Removes thes from our all database files list.
+                    otherDbs.Remove(key);
                 }
                 catch (Exception ex)
                 {
-                    Utils.Log.LogError($"Failed to open Database: {kvp.Key}");
+                    Utils.Log.LogError($"Failed to open Database: {key}");
                 }
             }
+            // Now we create connection objects for the other databases.
+            // However we will open them dynamically as needed.
+            foreach (string key in otherDbs)
+            {
+                try
+                {
+                    _connections.Add(key, EstablishConnection(key));
+                }
+                catch (Exception ex)
+                {
+                    Utils.Log.LogError($"Failed to add Database: {key}");
+                }
+            }
+            Utils.Log.LogMessage("Databases Finished Initializing.");
         }
         public static void CloseConnections()
         {
@@ -92,6 +116,7 @@ namespace Database_Modification_Framework
                 }
             }
         }
+
         private static int ExecuteSQL(IDbConnection connection, string sql)
         {
             IDbCommand command = connection.CreateCommand();
@@ -102,72 +127,211 @@ namespace Database_Modification_Framework
         }
     }
 
-    internal class Database
+    public class Database
     {
-        internal static string GetDatabaseConnectionString(string key)
+        //internal static string GetDatabaseConnectionString(string key)
+        //{
+        //    string dbPath;
+        //    if(Utils.Databases == null)
+        //    {
+        //        Utils.Log.LogError($"Failed to intiialize databases");
+        //        return null;
+        //    }
+        //    Utils.Databases.TryGetValue(key, out dbPath);
+        //    if (dbPath == null)
+        //    {
+        //        Utils.Log.LogError($"Failed to find {key} database in Game Database Directory.");
+        //        return null;
+        //    }
+        //    dbPath = Path.Combine(Definitions.Directories.databaseDir, dbPath);
+        //    Utils.Log.LogMessage(dbPath);
+        //    return $@"URI=file:{dbPath}";
+        //}
+
+        //internal static IDbConnection GetDatabase(string key)
+        //{
+        //    string connectionString = GetDatabaseConnectionString(key);
+        //    if(connectionString == null)
+        //    {
+        //        Utils.Log.LogError($"Failed to get connection string to {key} database.");
+        //        return null;
+        //    }
+        //    try
+        //    {
+        //        Utils.Log.LogMessage(connectionString);
+        //        IDbConnection dbConnection = new SqlConnection(connectionString);
+        //        dbConnection.Open();
+        //        return dbConnection;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Utils.Log.LogError($"Failed to open connection to {key} database. {ex.Message}");
+        //        return null;
+        //    }
+        //}
+
+        //public static void UpdateItemByID(string database, string query)
+        //{
+        //    Utils.Log.LogMessage($"SQL received {query}");
+        //    IDbConnection connection = GetDatabase(database);
+
+        //    IDbTransaction transaction = null;
+        //    IDbCommand command = null;
+        //    try
+        //    {
+        //        transaction = connection.BeginTransaction();
+        //        command = connection.CreateCommand();
+        //        command.CommandText = query;
+        //        command.Transaction = transaction;
+
+        //        int rowsAffected = command.ExecuteNonQuery();
+        //        transaction.Commit();
+
+        //        Utils.Log.LogMessage($"Rows Affected: {rowsAffected}");
+        //    }
+        //    catch(Exception ex)
+        //    {
+        //        transaction.Rollback();
+        //        Utils.Log.LogError("Failed to modify SQLite Database.");
+        //    }
+        //    finally
+        //    {
+        //        transaction?.Dispose();
+        //        command?.Dispose();
+        //    }
+        //    connection.Close();
+        //}
+
+        internal static void ExecuteCommand(List<ISQLItem> items)
         {
-            string dbPath;
-            if(Utils.Databases == null)
+            if (items?.Count == 0)
             {
-                Utils.Log.LogError($"Failed to intiialize databases");
-                return null;
+                Utils.Log.LogError("Database commands Failed to prepare to execute.");
+                return;
             }
-            Utils.Databases.TryGetValue(key, out dbPath);
-            if (dbPath == null)
+            foreach (ISQLItem item in items)
             {
-                Utils.Log.LogError($"Failed to find {key} database in Game Database Directory.");
-                return null;
+                int rowsChanged = 0;
+                IDbConnection connection = null;
+                DatabaseManager.Connections.TryGetValue(item.Database, out connection);
+                if(connection is null)
+                {
+                    Utils.Log.LogError($"Database:{item.Database} Connection does not exist.");
+                    continue;
+                }    
+                if (connection?.State != ConnectionState.Open)
+                {
+                    Utils.Log.LogWarning($"Database: {connection.Database} - Connection was not opened, opening.");
+                    connection.Open();
+                    // infrequent connections which are opened here are closed
+                    // in the parent function -> Framework.SQLQueue.ProcessQueues
+                }
+                IDbCommand command = item.GetSqlCommand();
+                IDbTransaction transaction = null;
+                try
+                {
+                    transaction = connection.BeginTransaction();
+                    command.Connection = connection;
+                    command.Transaction = transaction;
+                    rowsChanged = command.ExecuteNonQuery();
+                    Utils.Log.LogMessage($"Executed SQLite Command - Rows Changed: {rowsChanged}");
+                    transaction.Commit();
+                    command.Dispose();
+                } catch (Exception ex)
+                {
+                    transaction?.Rollback();
+                    Utils.Log.LogError($"Failed to execute SQLite Command\n {ex.Message}");
+                }
+                finally
+                {
+                    transaction?.Dispose();
+                    command?.Dispose();
+                }
             }
-            dbPath = Path.Combine(Definitions.Directories.databaseDir, dbPath);
-            Utils.Log.LogMessage(dbPath);
-            return $@"URI=file:{dbPath}";
         }
 
-        internal static IDbConnection GetDatabase(string key)
+        public static class DbNonRegional
         {
-            string connectionString = GetDatabaseConnectionString(key);
-            if(connectionString == null)
+            public static Definitions.Item GetItem(string Id)
             {
-                Utils.Log.LogError($"Failed to get connection string to {key} database.");
+                return ReaderToItem(GetItemById(Id));
+            }
+            public static List<Definitions.Item> GetItems(Enums.NonRegionalItem field, string value)
+            {
+                return ReaderToItems(GetItemsByParam(field, value));
+            }
+            private static Definitions.Item ReaderToItem(IDataReader dataReader)
+            {
+                if (dataReader.Read())
+                    return new Definitions.Item(dataReader);
                 return null;
             }
-            try
+            private static List<Definitions.Item> ReaderToItems(IDataReader dataReader)
             {
-                Utils.Log.LogMessage(connectionString);
-                IDbConnection dbConnection = new SqliteConnection(connectionString);
-                dbConnection.Open();
-                return dbConnection;
+                List<Definitions.Item> items = new List<Definitions.Item>();
+                while(dataReader.Read())
+                {
+                    items.Add(new Definitions.Item(dataReader));
+                }
+                return items;
             }
-            catch (Exception ex)
+            private static IDataReader GetItemById(string id)
             {
-                Utils.Log.LogError($"Failed to open connection to {key} database. {ex.Message}");
-                return null;
+                IDbConnection connection = null;
+                DatabaseManager.Connections.TryGetValue(Files.NonRegional, out connection);
+                if (connection is null)
+                {
+                    Utils.Log.LogError($"Database:{Files.NonRegional} Connection does not exist.");
+                    return null;
+                }
+                IDbCommand cmd = connection.CreateCommand();
+                IDataReader reader = null;
+                try
+                {
+                    cmd.Parameters.Add(new SqliteParameter("id", id));
+                    cmd.CommandText = @"SELECT * FROM item_attributes WHERE id = @id";
+                    reader = cmd.ExecuteReader();
+                    return reader;
+                }
+                catch (Exception ex)
+                {
+                    Utils.Log.LogError($"Failed to retrieve Item data. {ex}");
+                    return null;
+                }
+                finally
+                {
+                    cmd?.Dispose();
+                }
+
             }
-        }
-
-        public static void UpdateBaseItemByID(string database, string query)
-        {
-            Utils.Log.LogMessage($"SQL received {query}");
-            IDbConnection connection = GetDatabase(database);
-
-            IDbTransaction transaction = connection.BeginTransaction();
-            try
+            private static IDataReader GetItemsByParam(Enums.NonRegionalItem param, object value)
             {
-                IDbCommand command = connection.CreateCommand();
-                command.CommandText = query;
-                command.Transaction = transaction;
-
-                int rowsAffected = command.ExecuteNonQuery();
-                transaction.Commit();
-
-                Utils.Log.LogMessage($"Rows Affected: {rowsAffected}");
+                IDbConnection connection = null;
+                DatabaseManager.Connections.TryGetValue(Files.NonRegional, out connection);
+                if (connection is null)
+                {
+                    Utils.Log.LogError($"Database:{Files.NonRegional} Connection does not exist.");
+                    return null;
+                }
+                IDbCommand cmd = connection.CreateCommand();
+                IDataReader reader = null;
+                try
+                {
+                    cmd.Parameters.Add(new SqliteParameter("value", value));
+                    cmd.CommandText = $@"SELECT * FROM item_attributes WHERE {param.ToString()} = @value";
+                    reader = cmd.ExecuteReader();
+                    return reader;
+                }
+                catch (Exception ex)
+                {
+                    Utils.Log.LogError($"Failed to retrieve Item data. {ex}");
+                    return null;
+                }
+                finally
+                {
+                    cmd?.Dispose();
+                }
             }
-            catch(Exception ex)
-            {
-                transaction.Rollback();
-                Utils.Log.LogError("Failed to modify SQL Database.");
-            }
-            connection.Close();
         }
     }
 }

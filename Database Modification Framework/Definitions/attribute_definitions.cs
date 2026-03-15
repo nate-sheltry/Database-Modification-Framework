@@ -89,6 +89,29 @@ namespace Database_Modification_Framework.Definitions
         public SpecialNumeric(string name, int value) : base(name, value) { }
     }
 
+    public class RepairNumeric : ParentAttribute<int>
+    {
+
+        public override int Value
+        {
+            get
+            {
+                int rawInt;
+                if (int.TryParse(_value.Remove(0, 1), out rawInt))
+                    return rawInt;
+                throw new ArgumentNullException($"Failed to parse {Name} value.");
+            }
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentNullException($"{Name} attribute cannot be less than 0.");
+                _value = $"p{value}";
+            }
+        }
+        public RepairNumeric(string gaLine) : base(gaLine) { }
+        public RepairNumeric(string name, int value) : base(name, value) { }
+    }
+
     public class GenericFloat : ParentAttribute<float>
     {
         public override float Value
