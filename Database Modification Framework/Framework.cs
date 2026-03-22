@@ -30,7 +30,7 @@ namespace Database_Modification_Framework
 
         //Perhaps make a specialized container of queues
         //We'll sort SQL by databases in order to maximize performance.
-        public static class SQLQueue
+        internal static class SQLQueue
         {
             private static Dictionary<string, Queue<ISQLItem>> dict = new Dictionary<string, Queue<ISQLItem>> { };
             private static long _count = 0;
@@ -127,7 +127,11 @@ namespace Database_Modification_Framework
         }
 
         public static event Action SqlListener;
-        public static void QueueSQL(string database, string sql)
+        public static void QueueSQL(ISQLItem item)
+        {
+            SQLQueue.Enqueue(item);
+        }
+        public static void QueueRawSQL(Enums.Databases database, string sql)
         {
             SQLQueue.Enqueue(
                 new RawSQLItem(database, sql)

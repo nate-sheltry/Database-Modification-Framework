@@ -28,7 +28,7 @@ namespace Database_Modification_Framework.Definitions
             );
     }
 
-    public static class Files
+    internal static class Files
     {
         public const string AI = "AI";
         public const string Main = "Main";
@@ -47,6 +47,24 @@ namespace Database_Modification_Framework.Definitions
     }
     public static class Enums
     {
+        public enum Databases
+        {
+            AI = 0,
+            Main = 1,
+            Chinese = 2,
+            French = 3,
+            FrenchOld = 4,
+            German = 5,
+            GermanOld = 6,
+            Italian = 7,
+            Russian = 8,
+            Spanish = 9,
+            Ukrainian = 10,
+            NonRegional = 11,
+            Translation = 12,
+            TranslationOld = 13,
+
+        }
         public enum NonRegionalTables
         {
             slaughterhouse_enemies = 0,
@@ -89,70 +107,7 @@ namespace Database_Modification_Framework.Definitions
             type = 3,
             challenge_level = 4,
         }
-    }
-
-    //public class QueuedMod
-    //{
-    //    public BaseUnityPlugin mod { get; }
-    //    public int LoadOrder { get;  }
-    //    public QueuedMod(BaseUnityPlugin mod, int LoadOrder = 1000)
-    //    {
-    //        this.mod = mod;
-    //        this.LoadOrder = LoadOrder;
-    //    }
-    //}
-
-    public static class ItemType
-    {
-        public static readonly string[] TypeList = new string[]{
-            "Ammo","Armor","ArmorInsertion","Attachment",
-            "BackpackUp","Battery","Casing","Fertilizer",
-            "Food","FoodIngredient","Fuel","HeadGear",
-            "Helmet","Misc","Ingredient","IngredientJar",
-            "Key","Keychain","Medicine","Medkit",
-            "Money","MutantWeapon","Note","Poison",
-            "PrimaryWeapon","SideArm","Recipe","RecipeBook",
-            "Repair","Seed","Serum","SleepingBag",
-            "Solvent","SupplyPack","Thrown","Tool",
-            "EasterEggs",
-        };
-        public static string Ammo { get => TypeList[0]; }
-        public static string Armor { get => TypeList[1]; }
-        public static string ArmorInsertion { get => TypeList[2]; }
-        public static string Attachment { get => TypeList[3]; }
-        public static string BackpackUp { get => TypeList[4]; }
-        public static string Battery { get => TypeList[5]; }
-        public static string Casing { get => TypeList[6]; }
-        public static string Fertilizer { get => TypeList[7]; }
-        public static string Food { get => TypeList[8]; }
-        public static string FoodIngredient { get => TypeList[9]; }
-        public static string Fuel { get => TypeList[10]; }
-        public static string HeadGear { get => TypeList[11]; }
-        public static string Helmet { get => TypeList[12]; }
-        public static string Misc { get => TypeList[13]; }
-        public static string Ingredient { get => TypeList[14]; }
-        public static string IngredientJar { get => TypeList[15]; }
-        public static string Key { get => TypeList[16]; }
-        public static string Keychain { get => TypeList[17]; }
-        public static string Medicine { get => TypeList[18]; }
-        public static string Medkit { get => TypeList[19]; }
-        public static string Money { get => TypeList[20]; }
-        public static string MutantWeapon { get => TypeList[21]; }
-        public static string Note { get => TypeList[22]; }
-        public static string Poison { get => TypeList[23]; }
-        public static string PrimaryWeapon { get => TypeList[24]; }
-        public static string SideArm { get => TypeList[25]; }
-        public static string Recipe { get => TypeList[26]; }
-        public static string RecipeBook { get => TypeList[27]; }
-        public static string Repair { get => TypeList[28]; }
-        public static string Seed { get => TypeList[29]; }
-        public static string Serum { get => TypeList[30]; }
-        public static string SleepingBag { get => TypeList[31]; }
-        public static string Solvent { get => TypeList[32]; }
-        public static string SupplyPack { get => TypeList[33]; }
-        public static string Thrown { get => TypeList[34]; }
-        public static string Tool { get => TypeList[35]; }
-        public static string EasterEggs { get => TypeList[36]; }
+        // Non Regional Item's Types are defined as ItemType in the base game.
     }
 
     public interface ISQLItem
@@ -163,9 +118,16 @@ namespace Database_Modification_Framework.Definitions
     }
     public abstract class SQLItem : ISQLItem
     {
-        internal string _database { get; set; }
-        public string Database { get => _database; }
+        internal Enums.Databases _database { get; set; }
+        public string Database { get => _database.ToString(); }
         internal string _sql { get; set; }
+        public virtual ISQLItem Create(IDataReader reader)
+        {
+            return null;
+        }
+        public virtual void Sync() {
+            Framework.QueueSQL(this);
+        }
         public virtual IDbCommand GetSqlCommand()
         {
             return new SqliteCommand(_sql);
@@ -179,7 +141,7 @@ namespace Database_Modification_Framework.Definitions
         public string Comments;
         public SlaughterhouseEnemy(IDataReader reader)
         {
-            _database = Files.NonRegional;
+            _database = Enums.Databases.NonRegional;
             character_id = reader.GetString((int)Enums.NonRegionalEnemy.character_id);
             tier = reader.GetInt16((int)Enums.NonRegionalEnemy.tier);
             character_type = reader.GetInt16((int)Enums.NonRegionalEnemy.character_type);
@@ -209,15 +171,17 @@ namespace Database_Modification_Framework.Definitions
         public string id;
         public short tier;
         public int price;
-        public string type;
+        public ItemType type;
         public short challenge_level;
         public SlaughterhouseProp(IDataReader reader)
         {
-            _database = Files.NonRegional;
+            _database = Enums.Databases.NonRegional;
             id = reader.GetString((int)Enums.NonRegionalProp.id);
             tier = reader.GetInt16((int)Enums.NonRegionalProp.tier);
             price = reader.GetInt32((int)Enums.NonRegionalProp.price);
-            type = reader.GetString((int)Enums.NonRegionalProp.type);
+            ItemType temp;
+            Enum.TryParse(reader.GetString((int)Enums.NonRegionalProp.type), out temp);
+            type = temp;
             challenge_level = reader.GetInt16((int)Enums.NonRegionalProp.challenge_level);
         }
         public override IDbCommand GetSqlCommand()
@@ -227,7 +191,7 @@ namespace Database_Modification_Framework.Definitions
                 new SqliteParameter("id", id),
                 new SqliteParameter("tr", tier),
                 new SqliteParameter("pc", price),
-                new SqliteParameter("tp", type),
+                new SqliteParameter("tp", type.ToString()),
                 new SqliteParameter("cl", challenge_level),
             });
             cmd.CommandText = $@"
@@ -243,9 +207,9 @@ namespace Database_Modification_Framework.Definitions
     }
     public class RawSQLItem : SQLItem
     {
-        public RawSQLItem(string dbName, string sql)
+        public RawSQLItem(Enums.Databases db, string sql)
         {
-            _database = dbName;
+            _database = db;
             _sql = sql;
         }
     }
@@ -337,13 +301,13 @@ namespace Database_Modification_Framework.Definitions
     }
 
     // The Non Regional Item Table Datatype
-    public class Item : SQLItem
+    public class NonRegionalItem : SQLItem
     {
         public string Id { get; set; }
         public string PrefabName { get; set; }
         public string SpriteName { get; set; }
         public float Weight { get; set; }
-        public string Type { get; set; }
+        public ItemType Type { get; set; }
         public short GridCols { get; set; }
         public short GridRows { get; set; }
         public int MaxStackSize { get; set; }
@@ -356,16 +320,16 @@ namespace Database_Modification_Framework.Definitions
         public ItemAttributes GlobalAttributes { get; set; }
         public bool NotForSale { get; set; }
         public int ChallengeLevel { get; set; }
-        public Item(object data)
+        public NonRegionalItem(object data)
         {
             try
             {
-                _database = Files.NonRegional;
+                _database = Enums.Databases.NonRegional;
                 Id = (string)GetPropValue(data, "Id");
                 PrefabName = (string)GetPropValue(data, "PrefabName");
                 SpriteName = (string)GetPropValue(data, "SpriteName");
                 Weight = (float)GetPropValue(data, "Weight");
-                Type = (string)GetPropValue(data, "Type");
+                Type = (ItemType)GetPropValue(data, "Type");
                 GridCols = (short)GetPropValue(data, "GridCols");
                 GridRows = (short)GetPropValue(data, "GridRows");
                 MaxStackSize = (int)GetPropValue(data, "MaxStackSize");
@@ -384,14 +348,16 @@ namespace Database_Modification_Framework.Definitions
             }
 
         }
-        public Item(IDataReader reader)
+        public NonRegionalItem(IDataReader reader)
         {
-            _database = Files.NonRegional;
+            _database = Enums.Databases.NonRegional;
             Id = reader.GetString((int)Enums.NonRegionalItem.id);
             PrefabName = reader.GetString((int)Enums.NonRegionalItem.prefab_name);
             SpriteName = reader.GetString((int)Enums.NonRegionalItem.sprite_name);
             Weight = reader.GetFloat((int)Enums.NonRegionalItem.weight);
-            Type = reader.GetString((int)Enums.NonRegionalItem.type);
+            ItemType itemType;
+            Enum.TryParse(reader.GetString((int)Enums.NonRegionalItem.type), false, out itemType);
+            Type = itemType;
             GridCols = reader.GetInt16((int)Enums.NonRegionalItem.grid_cols);
             GridRows = reader.GetInt16((int)Enums.NonRegionalItem.grid_rows);
             MaxStackSize = reader.GetInt32((int)Enums.NonRegionalItem.max_stack_size);
@@ -418,7 +384,7 @@ namespace Database_Modification_Framework.Definitions
                 new SqliteParameter("prefab_name", PrefabName),
                 new SqliteParameter("sprite_name", SpriteName),
                 new SqliteParameter("weight", Weight),
-                new SqliteParameter("type", Type),
+                new SqliteParameter("type", Type.ToString()),
                 new SqliteParameter("grid_cols", GridCols),
                 new SqliteParameter("grid_rows", GridRows),
                 new SqliteParameter("max_stack_size", MaxStackSize),
@@ -454,12 +420,6 @@ namespace Database_Modification_Framework.Definitions
                 WHERE id = @id";
             return cmd;
         }
-
-        //public Item(IDataReader reader)
-        //{
-        //    this.Id = reader.GetString(DatatableInfo.NonRegional["id"]);
-
-        //}
     }
 
 }

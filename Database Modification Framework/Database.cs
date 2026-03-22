@@ -252,59 +252,83 @@ namespace Database_Modification_Framework
 
         public static class DbNonRegional
         {
-            public static Definitions.Item GetItem(string Id)
+            public static NonRegionalItem GetItem(string Id)
             {
-                return ReaderToItem(GetItemById(Id));
+                return ReaderToItem(
+                    GetSQLDataByParam(
+                        Enums.NonRegionalItem.id.ToString(),
+                        Id,
+                        Enums.NonRegionalTables.item_attributes.ToString()
+                    ),
+                    r => new NonRegionalItem(r)
+                );
             }
-            public static List<Definitions.Item> GetItems(Enums.NonRegionalItem field, string value)
+            public static List<NonRegionalItem> GetItems(Enums.NonRegionalItem field, string value)
             {
-                return ReaderToItems(GetItemsByParam(field, value));
+                return ReaderToItems(
+                    GetSQLDataByParam(field.ToString(), value, 
+                        Enums.NonRegionalTables.item_attributes.ToString()
+                    ), 
+                    r => new NonRegionalItem(r)
+                );
             }
-            private static Definitions.Item ReaderToItem(IDataReader dataReader)
+            public static SlaughterhouseEnemy GetEnemy(string Id)
+            {
+                return ReaderToItem(
+                    GetSQLDataByParam(
+                        Enums.NonRegionalEnemy.character_id.ToString(),
+                        Id,
+                        Enums.NonRegionalTables.slaughterhouse_enemies.ToString()
+                    ),
+                    r => new SlaughterhouseEnemy(r)
+                );
+            }
+            public static List<SlaughterhouseEnemy> GetEnemies(Enums.NonRegionalEnemy field, string value)
+            {
+                return ReaderToItems(
+                    GetSQLDataByParam(field.ToString(), value,
+                        Enums.NonRegionalTables.slaughterhouse_enemies.ToString()
+                    ),
+                    r => new SlaughterhouseEnemy(r)
+                );
+            }
+            public static SlaughterhouseProp GetProp(string Id)
+            {
+                return ReaderToItem(
+                    GetSQLDataByParam(
+                        Enums.NonRegionalProp.id.ToString(),
+                        Id,
+                        Enums.NonRegionalTables.slaughterhouse_props.ToString()
+                    ),
+                    r => new SlaughterhouseProp(r)
+                );
+            }
+            public static List<SlaughterhouseProp> GetProps(Enums.NonRegionalProp field, string value)
+            {
+                return ReaderToItems(
+                    GetSQLDataByParam(field.ToString(), value,
+                        Enums.NonRegionalTables.slaughterhouse_props.ToString()
+                    ),
+                    r => new SlaughterhouseProp(r)
+                );
+            }
+            private static T ReaderToItem<T>(IDataReader dataReader, Func<IDataReader, T> factory) where T : class
             {
                 if (dataReader.Read())
-                    return new Definitions.Item(dataReader);
+                    return factory(dataReader);
                 return null;
             }
-            private static List<Definitions.Item> ReaderToItems(IDataReader dataReader)
+            private static List<T> ReaderToItems<T>(IDataReader dataReader, Func<IDataReader, T> factory) where T : class
             {
-                List<Definitions.Item> items = new List<Definitions.Item>();
+                List<T> items = new List<T>();
                 while(dataReader.Read())
                 {
-                    items.Add(new Definitions.Item(dataReader));
+                    items.Add(factory(dataReader));
                 }
                 return items;
             }
-            private static IDataReader GetItemById(string id)
-            {
-                IDbConnection connection = null;
-                DatabaseManager.Connections.TryGetValue(Files.NonRegional, out connection);
-                if (connection is null)
-                {
-                    Utils.Log.LogError($"Database:{Files.NonRegional} Connection does not exist.");
-                    return null;
-                }
-                IDbCommand cmd = connection.CreateCommand();
-                IDataReader reader = null;
-                try
-                {
-                    cmd.Parameters.Add(new SqliteParameter("id", id));
-                    cmd.CommandText = @"SELECT * FROM item_attributes WHERE id = @id";
-                    reader = cmd.ExecuteReader();
-                    return reader;
-                }
-                catch (Exception ex)
-                {
-                    Utils.Log.LogError($"Failed to retrieve Item data. {ex}");
-                    return null;
-                }
-                finally
-                {
-                    cmd?.Dispose();
-                }
 
-            }
-            private static IDataReader GetItemsByParam(Enums.NonRegionalItem param, object value)
+            private static IDataReader GetSQLDataByParam(string param, object value, string table)
             {
                 IDbConnection connection = null;
                 DatabaseManager.Connections.TryGetValue(Files.NonRegional, out connection);
@@ -318,7 +342,7 @@ namespace Database_Modification_Framework
                 try
                 {
                     cmd.Parameters.Add(new SqliteParameter("value", value));
-                    cmd.CommandText = $@"SELECT * FROM item_attributes WHERE {param.ToString()} = @value";
+                    cmd.CommandText = $@"SELECT * FROM {table} WHERE {param} = @value";
                     reader = cmd.ExecuteReader();
                     return reader;
                 }
