@@ -1,27 +1,26 @@
-﻿using Database_Modification_Framework.Definitions;
-using Mono.Data.Sqlite;
+﻿using BepInEx.Logging;
+using Database_Modification_Framework.Definitions;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine.Diagnostics;
 using static Database_Modification_Framework.Framework;
 
 namespace Database_Modification_Framework
 {
     internal static class Setup
     {
-        public static void initialize()
+        internal static void initialize()
         {
+            FrameworkUtils.GetLogLevel();
+            FrameworkUtils.DetermineMaxTX();
             //exit will clean up any previous runtime leftovers in the case
             //we failed to clean up properly when the executable closed.
             exit();
             //For testing, will log our directory for manual verification.
-            Utils.Log.LogMessage(Directories.mainDatabase);
+            FrameworkUtils.InternalLog(
+                LogLevel.Debug, 
+                Directories.mainDatabase
+            );
             Dictionary<string, string> databases = new Dictionary<string, string>();
             try
             {
@@ -36,18 +35,29 @@ namespace Database_Modification_Framework
                     string file = Path.GetFileName(f);
                     databases.Add(file.Replace(".db",""), file);
                     //For testing
-                    Utils.Log.LogMessage(file.Replace(".db", ""));
+                    FrameworkUtils.InternalLog(
+                        LogLevel.Debug,
+                        file.Replace(".db", "")
+                    );
                 }
-                Utils.Databases = databases;
+                FrameworkUtils.Databases = databases;
                 DatabaseManager.InitializeDb();
                 SQLQueue.Initialize();
                 return;
             }
             catch (Exception ex)
             {
-                Utils.Log.LogError($"Failed to initialize Database Framework: {ex.Message}");
+                // Fatal because failure to initialize results in all
+                // functionality lost.
+                FrameworkUtils.InternalLog(
+                    LogLevel.Fatal, 
+                    $"Failed to initialize Database Framework: {ex.Message}"
+                );
             }
-            Utils.Log.LogError("Setup Failed: Encountered Fatal Error during Setup process.");
+            FrameworkUtils.InternalLog(
+                LogLevel.Fatal, 
+                "Setup Failed: Encountered Fatal Error during Setup process."
+            );
             throw new Exception("Setup Failed: Encountered Fatal Error during Setup process.");
         }
 
@@ -74,7 +84,10 @@ namespace Database_Modification_Framework
             }
             catch (Exception ex)
             {
-                Utils.Log.LogError($"Failed to cleanup database: {ex.Message}");
+                FrameworkUtils.InternalLog(
+                    LogLevel.Error,
+                    $"Failed to cleanup database: {ex.Message}"
+                );
             }
         }
     }

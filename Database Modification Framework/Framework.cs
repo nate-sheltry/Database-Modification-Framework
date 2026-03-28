@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Bootstrap;
+using BepInEx.Logging;
 using Database_Modification_Framework.Definitions;
 using Mono.Data.Sqlite;
 using Newtonsoft.Json.Converters;
@@ -42,7 +43,10 @@ namespace Database_Modification_Framework
                 {
                     dict.Add(db, new Queue<ISQLItem>());
                 }
-                Utils.Log.LogMessage($"SQLQueue finished loading Keys: {dict.Keys}");
+                FrameworkUtils.InternalLog(
+                    LogLevel.Message,
+                    $"SQLQueue finished loading Keys: {dict.Keys}"
+                );
             }
 
             public static void Enqueue(ISQLItem item)
@@ -54,7 +58,9 @@ namespace Database_Modification_Framework
                 }
                 catch (Exception ex)
                 {
-                    Utils.Log.LogError(ex);
+                    FrameworkUtils.InternalLog(
+                        LogLevel.Error, ex
+                    );
                 }
             }
             private static ISQLItem Dequeue(Queue<ISQLItem> queue)
@@ -77,7 +83,10 @@ namespace Database_Modification_Framework
                     }
                     catch (Exception ex)
                     {
-                        Utils.Log.LogError(ex);
+                        FrameworkUtils.InternalLog(
+                            LogLevel.Error, 
+                            ex
+                        );
                     }
                 }
             }
@@ -90,12 +99,12 @@ namespace Database_Modification_Framework
                 keys.Remove(Files.NonRegional);
 
                 Queue<ISQLItem> nonRegional;
-                while(lists.Count < Utils.MAX_TX)
+                while(lists.Count < FrameworkUtils.MAX_TX)
                 {
                     // select non-regional queued items first for batched operations.
                     if (dict.TryGetValue(Files.NonRegional, out nonRegional))
                     {
-                        while(nonRegional.Count > 0 && lists.Count < Utils.MAX_TX)
+                        while(nonRegional.Count > 0 && lists.Count < FrameworkUtils.MAX_TX)
                             lists.Add(Dequeue(nonRegional));
                     }
                     // select all other database items for batching.
@@ -104,15 +113,18 @@ namespace Database_Modification_Framework
                         Queue<ISQLItem> queue;
                         if(!dict.TryGetValue(key, out queue))
                         {
-                            Utils.Log.LogError($"Failed to acces commands for {key} database.");
+                            FrameworkUtils.InternalLog(
+                                LogLevel.Error, 
+                                $"Failed to acces commands for {key} database."
+                            );
                             continue;
                         }
-                        while(queue.Count > 0 && lists.Count < Utils.MAX_TX)
+                        while(queue.Count > 0 && lists.Count < FrameworkUtils.MAX_TX)
                             lists.Add(Dequeue(queue));
                     }
                     break;
                 }
-                Database.ExecuteCommand(lists);
+                SqlExecutor.ExecuteCommand(lists);
                 // Infrequent connections are closed here to avoid
                 // repeated and unnecessary database connection opens.
                 if (Count < 1)

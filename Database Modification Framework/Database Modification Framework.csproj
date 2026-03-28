@@ -349,12 +349,20 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Database.cs" />
+    <Compile Include="FrameworkUtils.cs" />
+    <Compile Include="SqlExecutor.cs" />
+    <Compile Include="Database\localization.cs" />
+    <Compile Include="DatabaseManager.cs" />
+    <Compile Include="Database\nonregional.cs" />
     <Compile Include="Database_test_mod1.cs" />
     <Compile Include="Definitions\attribute_definitions.cs" />
+    <Compile Include="Definitions\enums.cs" />
+    <Compile Include="Definitions\localization_definitions.cs" />
+    <Compile Include="Definitions\nonregional_definitions.cs" />
+    <Compile Include="Definitions\plugin.cs" />
     <Compile Include="Framework.cs" />
     <Compile Include="Setup.cs" />
-    <Compile Include="Definitions\definitions.cs" />
+    <Compile Include="Definitions\general_definitions.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

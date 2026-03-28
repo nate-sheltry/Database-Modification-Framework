@@ -2,10 +2,6 @@
 using Database_Modification_Framework;
 using Database_Modification_Framework.Definitions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Database_Test_Mod1
 {
@@ -13,7 +9,7 @@ namespace Database_Test_Mod1
     [BepInDependency(
         "tunguska.natesheltry.database_modification_framework.modplugin",
         BepInDependency.DependencyFlags.HardDependency)]
-    public class Main : BaseUnityPlugin
+    public class Main : DatbaseModificationPlugin
     {
         //Plugin Information
         private const string MyGUID = "tunguska.natesheltry.database_test_mod1.mod";
@@ -22,25 +18,25 @@ namespace Database_Test_Mod1
 
         public void Awake()
         {
+            FrameworkUtils.RegisterMod(MyGUID);
             this.Logger.LogMessage("Sending SQL");
-            //Framework.QueueRawSQL(Enums.Databases.NonRegional, @"UPDATE item_attributes SET weight = 10 WHERE id = 'huntingshotgun';");
-            var shotgun = (NonRegionalItem)ReadInItem(Database.DbNonRegional.GetItem, "huntingshotgun");
+            var shotgun = (NonRegionalItem)ReadInItem(Data.GetItem, "huntingshotgun");
             if (shotgun != null)
             {
                 shotgun.Weight = 10;
-                Utils.Log.LogMessage($"ItemType: {shotgun.Type.ToString()}");
+                Utils.LogMessage($"ItemType: {shotgun.Type.ToString()}");
                 shotgun.Sync();
             }
-            var enemy = (SlaughterhouseEnemy)ReadInItem(Database.DbNonRegional.GetEnemy, "Mutant1");
-            Utils.Log.LogMessage($"Comments: {enemy.Comments}");
+            var enemy = (SlaughterhouseEnemy)ReadInItem(Data.GetEnemy, "Mutant1");
+            Utils.LogMessage($"Comments: {enemy.Comments}");
             enemy.Sync();
-            var prop = (SlaughterhouseProp)ReadInItem(Database.DbNonRegional.GetProp, "ammo762_39");
-            Utils.Log.LogMessage($"price: {prop.price}");
+            var prop = (SlaughterhouseProp)ReadInItem(Data.GetProp, "ammo762_39");
+            Utils.LogMessage($"price: {prop.price}");
             prop.Sync();
             // Get Function for retrieving single item.
-            var item = Database.DbNonRegional.GetItem("ammo762_39");
+            var item = Data.GetItem("ammo762_39");
             // Log's item info to verify.
-            Utils.Log.LogMessage(item.PrefabName);
+            Utils.LogMessage(item.PrefabName);
         }
 
         public ISQLItem ReadInItem(Func<string, SQLItem> func, string id)
@@ -48,7 +44,7 @@ namespace Database_Test_Mod1
             var item = func(id);
             if (item == null)
             {
-                Utils.Log.LogError($"Failed to get, {id}");
+                Utils.LogWarning($"Failed to get, {id}");
             }
             return item;
         }

@@ -1,15 +1,5 @@
-﻿using Mono.Cecil;
-using Steamworks;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using TMPro;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
-using static Mono.Security.X509.X520;
 
 namespace Database_Modification_Framework.Definitions
 {
@@ -193,6 +183,78 @@ namespace Database_Modification_Framework.Definitions
         }
         public NumericBool(string gaLine) : base(gaLine) { }
         public NumericBool(string name, bool value) : base(name, value) { }
+    }
+    public static class AttributeReader
+    {
+        // Performance could be better here, so this will need to be revisited at some point.
+        internal static readonly HashSet<string> stringBools = new HashSet<string>
+        {
+            "_ReloadToUnjam", "_NoHeadShots", "_Cookable",
+            "_IsRanged", "_hideHats", "_IsFull",
+        };
+
+        internal static readonly HashSet<string> numericBools = new HashSet<string>
+        {
+            "_AlwaysKnockBack", "_IsGrenade", "_IsIllustration",
+            "_convertsDamage", "_returnsDamage", "_removeSpeedPenalty",
+            "_NoHelmet", "_IsHeavy", "_NoJump",
+            "_nightVision", "_NoSprint", "_boostArmStrength",
+            "_MaxMoveSpeed",
+        };
+
+        internal static readonly HashSet<string> genericInts = new HashSet<string>
+        {
+            "_Radiation","_PoisonDuration","_CausticDuration",
+            "_visitationProtection","_gasProtection","_Toxin",
+            "_Length","Blunt Damage","_DamageHigh",
+            "Padding","_AccuracyMult","_Caustic",
+            "_PoisonDamage","Poison Hits","Radiation",
+            "_StaminaRestoreBoost","Armor","Charges",
+            "_LengthSec","_Duration","_MoreCarryWeight",
+            "_NoiseLevel","_Damage","Radius",
+            "_Muzzle Velocity","Penetration","_ExtraRange",
+            "Capacity","Electrical","Calories",
+            "_carryWeight","_Electric","Sharp Damage",
+        };
+
+        internal static readonly HashSet<string> genericFloats = new HashSet<string>
+        {
+            "_Rarity","Rate of Fire","_reduceNoise",
+            "_reduceNightVisibility","Battery Drain","_staminaConversion",
+            "Swing Speed","_RequireStrength","_Bleeding",
+            "Recoil","_DamageDrop","_restoreHealth",
+            "Accuracy","Detection Radius","Speed",
+            "Handling","Coverage","_ReloadSpeed",
+            "_Encumbrance","Growth Period","Damage",
+        };
+
+        internal static readonly HashSet<string> specialNumerics = new HashSet<string>
+        {
+            "Pockets", "_NewRows", "_CurrentFireMode",
+            "Magazine Size", "_numberOfProjectiles",
+            "_ThrowType", "_LoadedAmmos",
+        };
+
+        public static IGAttribute ReadAttribute(string line)
+        {
+            string[] breakdown = line.Split('=');
+            string key, value;
+            (key, value) = (breakdown[0], breakdown[1]);
+            if (key.Contains("Repair Amount"))
+                return new RepairNumeric(key);
+            else if (stringBools.Contains(key))
+                return new StringBool(line);
+            else if (numericBools.Contains(key))
+                return new NumericBool(line);
+            else if (genericInts.Contains(key))
+                return new GenericInt(line);
+            else if (genericFloats.Contains(key))
+                return new GenericFloat(line);
+            else if (specialNumerics.Contains(key))
+                return new SpecialNumeric(line);
+            else
+                return new GenericAttribute(line);
+        }
     }
 }
 
