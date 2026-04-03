@@ -1,5 +1,7 @@
-﻿using System;
+﻿using BepInEx;
+using System;
 using System.Collections.Generic;
+using UnityEngine.Diagnostics;
 
 namespace Database_Modification_Framework.Definitions
 {
@@ -30,6 +32,10 @@ namespace Database_Modification_Framework.Definitions
         public ParentAttribute(string gaLine)
         {
             this._sourceString = gaLine;
+            FrameworkUtils.InternalLog(
+                BepInEx.Logging.LogLevel.Info,
+                $"Attribute Line : {gaLine}"
+            );
             string[] parts = gaLine.Split('=');
             if (parts.Length != 2)
                 throw new ArgumentException("Invalid attribute line.");
@@ -238,10 +244,17 @@ namespace Database_Modification_Framework.Definitions
         public static IGAttribute ReadAttribute(string line)
         {
             string[] breakdown = line.Split('=');
+            if(breakdown.Length == 1)
+            {
+                FrameworkUtils.InternalLog(BepInEx.Logging.LogLevel.Debug,
+                    $"Generic Attribute with null value was made."
+                );
+                return new GenericAttribute(line, null);
+            }
             string key, value;
             (key, value) = (breakdown[0], breakdown[1]);
             if (key.Contains("Repair Amount"))
-                return new RepairNumeric(key);
+                return new RepairNumeric(line);
             else if (stringBools.Contains(key))
                 return new StringBool(line);
             else if (numericBools.Contains(key))

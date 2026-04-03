@@ -26,12 +26,22 @@ namespace Database_Modification_Framework.Database
                 r => new NonRegionalItem(r)
             );
         }
-        public static List<NonRegionalItem> GetItems(Enums.NonRegItem field, string value)
+        public static List<NonRegionalItem> GetItems(List<(Enums.NonRegItem, object)> values)
         {
             return ReaderToItems(
-                GetNonRegionalDataByParam(
-                    field.ToString(),
-                    value,
+                GetSQLDataByParams(
+                    Enums.Databases.NonRegional.ToString(),
+                    FrameworkUtils.ConvertEnumsToStrings(values),
+                    Enums.NonRegionalTables.item_attributes.ToString()
+                ),
+                r => new NonRegionalItem(r)
+            );
+        }
+        public static List<NonRegionalItem> GetAllItems()
+        {
+            return ReaderToItems(
+                GetAllSQLDataByTable(
+                    Enums.Databases.NonRegional.ToString(),
                     Enums.NonRegionalTables.item_attributes.ToString()
                 ),
                 r => new NonRegionalItem(r)
@@ -48,12 +58,22 @@ namespace Database_Modification_Framework.Database
                 r => new SlaughterhouseEnemy(r)
             );
         }
-        public static List<SlaughterhouseEnemy> GetEnemies(Enums.NonRegEnemy field, string value)
+        public static List<SlaughterhouseEnemy> GetEnemies(List<(Enums.NonRegEnemy, object)> values)
         {
             return ReaderToItems(
-                GetNonRegionalDataByParam(
-                    field.ToString(),
-                    value,
+                GetSQLDataByParams(
+                    Enums.Databases.NonRegional.ToString(),
+                    FrameworkUtils.ConvertEnumsToStrings(values),
+                    Enums.NonRegionalTables.slaughterhouse_enemies.ToString()
+                ),
+                r => new SlaughterhouseEnemy(r)
+            );
+        }
+        public static List<SlaughterhouseEnemy> GetAllEnemies()
+        {
+            return ReaderToItems(
+                GetAllSQLDataByTable(
+                    Enums.Databases.NonRegional.ToString(),
                     Enums.NonRegionalTables.slaughterhouse_enemies.ToString()
                 ),
                 r => new SlaughterhouseEnemy(r)
@@ -70,11 +90,22 @@ namespace Database_Modification_Framework.Database
                 r => new SlaughterhouseProp(r)
             );
         }
-        public static List<SlaughterhouseProp> GetProps(Enums.NonRegProp field, string value)
+        public static List<SlaughterhouseProp> GetProps(List<(Enums.NonRegProp, object)> values)
         {
             return ReaderToItems(
-                GetNonRegionalDataByParam(
-                    field.ToString(), value,
+                GetSQLDataByParams(
+                    Enums.Databases.NonRegional.ToString(),
+                    FrameworkUtils.ConvertEnumsToStrings(values),
+                    Enums.NonRegionalTables.slaughterhouse_props.ToString()
+                ),
+                r => new SlaughterhouseProp(r)
+            );
+        }
+        public static List<SlaughterhouseProp> GetAllProps()
+        {
+            return ReaderToItems(
+                GetAllSQLDataByTable(
+                    Enums.Databases.NonRegional.ToString(),
                     Enums.NonRegionalTables.slaughterhouse_props.ToString()
                 ),
                 r => new SlaughterhouseProp(r)

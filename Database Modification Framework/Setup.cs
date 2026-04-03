@@ -11,7 +11,7 @@ namespace Database_Modification_Framework
     {
         internal static void initialize()
         {
-            FrameworkUtils.GetLogLevel();
+            FrameworkUtils.LoadConfig();
             FrameworkUtils.DetermineMaxTX();
             //exit will clean up any previous runtime leftovers in the case
             //we failed to clean up properly when the executable closed.
@@ -36,7 +36,7 @@ namespace Database_Modification_Framework
                     databases.Add(file.Replace(".db",""), file);
                     //For testing
                     FrameworkUtils.InternalLog(
-                        LogLevel.Debug,
+                        LogLevel.Info,
                         file.Replace(".db", "")
                     );
                 }

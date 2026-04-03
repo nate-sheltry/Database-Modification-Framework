@@ -7,18 +7,16 @@ namespace Database_Modification_Framework.Definitions
         {
             AI = 0,
             Main = 1,
-            Chinese = 2,
-            French = 3,
-            FrenchOld = 4,
-            German = 5,
-            GermanOld = 6,
-            Italian = 7,
-            Russian = 8,
-            Spanish = 9,
-            Ukrainian = 10,
-            NonRegional = 11,
-            Translation = 12,
-            TranslationOld = 13,
+            MainCH = 2,
+            MainFR = 3,
+            MainGER = 4,
+            MainITA = 5,
+            MainRUS = 6,
+            MainSPA = 7,
+            MainUA = 8,
+            NonRegional = 9,
+            Translation = 10,
+            Translation_old = 11,
         }
         public enum NonRegionalTables //Shorthand NonReg
         {
@@ -30,7 +28,7 @@ namespace Database_Modification_Framework.Definitions
         {
             global_dialogue_response,
             journal_entries,
-            sqlite_sequence,
+            //sqlite_sequence,
             faction_relationships,
             story_conditions_trigger,
             note_papers,
@@ -44,7 +42,7 @@ namespace Database_Modification_Framework.Definitions
             stashes,
             recipes,
             skill_perks,
-            level_distance_matrix,
+            //level_distance_matrix,
             base_items,
             factions,
             level_data,
@@ -127,7 +125,7 @@ namespace Database_Modification_Framework.Definitions
             primary_set = 3,
             secondary_set = 4,
         }
-        public enum LocFactRel
+        public enum LocFactionRel
         {
             faction_id = 0,
             target_faction_id = 1,
@@ -158,7 +156,7 @@ namespace Database_Modification_Framework.Definitions
             level = 4,
             respawn = 5,
         }
-        public enum LocJrnlEntr
+        public enum LocJrnlEntries
         {
             id = 0,
             entry = 1,
@@ -254,7 +252,7 @@ namespace Database_Modification_Framework.Definitions
             is_durability = 3,
             is_type = 4,
         }
-        public enum LocStoryConTrigger
+        public enum LocStoryConTriggers
         {
             id = 0,
             initial_value = 1,
@@ -275,5 +273,14 @@ namespace Database_Modification_Framework.Definitions
             disruptive = 4,
         }
         // Non Regional Item's Types are defined as ItemType in the base game.
+        public enum RecipePlatforms
+        {
+            Serum = 0,
+            Cooking = 1,
+            Grill = 2,
+            Distiller = 3,
+            Cauldron = 4,
+            SoupCauldron = 5,
+        }
     }
 }

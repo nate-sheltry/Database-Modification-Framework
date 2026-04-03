@@ -31,6 +31,10 @@ namespace Database_Modification_Framework
 
         //Perhaps make a specialized container of queues
         //We'll sort SQL by databases in order to maximize performance.
+        public static long CheckQueueAmount()
+        {
+            return SQLQueue.Count;
+        }
         internal static class SQLQueue
         {
             private static Dictionary<string, Queue<ISQLItem>> dict = new Dictionary<string, Queue<ISQLItem>> { };
@@ -59,7 +63,7 @@ namespace Database_Modification_Framework
                 catch (Exception ex)
                 {
                     FrameworkUtils.InternalLog(
-                        LogLevel.Error, ex
+                        LogLevel.Error, $"Failed to add item to Queue.\n{ex}"
                     );
                 }
             }
@@ -85,7 +89,7 @@ namespace Database_Modification_Framework
                     {
                         FrameworkUtils.InternalLog(
                             LogLevel.Error, 
-                            ex
+                            $"Failed to add item to Queue.\n{ex}"
                         );
                     }
                 }

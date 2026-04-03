@@ -349,9 +349,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Database\all_localization.cs" />
+    <Compile Include="Database\multi_localization.cs" />
+    <Compile Include="Definitions\Plugin\data_nonregional.cs" />
+    <Compile Include="Definitions\Plugin\data_localization.cs" />
     <Compile Include="FrameworkUtils.cs" />
     <Compile Include="SqlExecutor.cs" />
-    <Compile Include="Database\localization.cs" />
+    <Compile Include="Database\single_localization.cs" />
     <Compile Include="DatabaseManager.cs" />
     <Compile Include="Database\nonregional.cs" />
     <Compile Include="Database_test_mod1.cs" />
@@ -359,12 +363,14 @@
     <Compile Include="Definitions\enums.cs" />
     <Compile Include="Definitions\localization_definitions.cs" />
     <Compile Include="Definitions\nonregional_definitions.cs" />
-    <Compile Include="Definitions\plugin.cs" />
+    <Compile Include="Definitions\Plugin\plugin.cs" />
     <Compile Include="Framework.cs" />
     <Compile Include="Setup.cs" />
     <Compile Include="Definitions\general_definitions.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Framework_Tester\Framework_Tester.cs" />
+    <Compile Include="Framework_Tester\TestHelperFunctions.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />

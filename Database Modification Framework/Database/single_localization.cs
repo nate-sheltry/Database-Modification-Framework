@@ -16,8 +16,9 @@ using static Database_Modification_Framework.SqlExecutor;
 
 namespace Database_Modification_Framework.Database
 {
-    public static class DbLocalization
+    public static partial class DbLocalization
     {
+        // Single Functions
         public static LocBaseItem GetBaseItem(string id, Enums.Databases database)
         {
             return ReaderToItem(
@@ -42,7 +43,7 @@ namespace Database_Modification_Framework.Database
                 r => new LocGlobalResp(r, database)
             );
         }
-        public static LocJrnlEntry GetJounralEntry(string id, Enums.Databases database)
+        public static LocJrnlEntry GetJounralEntry(int id, Enums.Databases database)
         {
             return ReaderToItem(
                 GetSQLDataByParam(
@@ -54,7 +55,7 @@ namespace Database_Modification_Framework.Database
                 r => new LocJrnlEntry(r, database)
             );
         }
-        public static LocFactRel GetFactionRel(string factionId, string targetFactId, Enums.Databases database)
+        public static LocFactRel GetFactionRel(int factionId, int targetFactId, Enums.Databases database)
         {
             return ReaderToItem(
                 GetSQLDataByParams(
@@ -89,7 +90,7 @@ namespace Database_Modification_Framework.Database
                 r => new LocNotePaper(r, database)
             );
         }
-        public static LocEnvSounds GetEnvSounds(string location, string time, 
+        public static LocEnvSounds GetEnvSoundset(string location, string time, 
             string weather, Enums.Databases database)
         {
             return ReaderToItem(
@@ -104,7 +105,7 @@ namespace Database_Modification_Framework.Database
                 r => new LocEnvSounds(r, database)
             );
         }
-        public static LocTaskData GetTaskData(string id, Enums.Databases database)
+        public static LocTaskData GetTaskData(int id, Enums.Databases database)
         {
             return ReaderToItem(
                 GetSQLDataByParam(
@@ -126,18 +127,19 @@ namespace Database_Modification_Framework.Database
                 r => new LocInitSquads(r, database)
             );
         }
-        public static LocPresetChar GetPresetChar(string id, Enums.Databases database)
-        {
-            return ReaderToItem(
-                GetSQLDataByParam(
-                    database.ToString(),
-                    Enums.LocPresetChar.id.ToString(), id,
-                    Enums.LocalizationTables.preset_characters.ToString()
-                ),
-                r => new LocPresetChar(r, database)
-            );
-        }
-        public static LocConversation GetConversation(string id, Enums.Databases database)
+        // Preset Table is empty
+        //public static LocPresetChar GetPresetChar(string id, Enums.Databases database)
+        //{
+        //    return ReaderToItem(
+        //        GetSQLDataByParam(
+        //            database.ToString(),
+        //            Enums.LocPresetChar.id.ToString(), id,
+        //            Enums.LocalizationTables.preset_characters.ToString()
+        //        ),
+        //        r => new LocPresetChar(r, database)
+        //    );
+        //}
+        public static LocConversation GetConversation(int id, Enums.Databases database)
         {
             return ReaderToItem(
                 GetSQLDataByParam(
@@ -148,7 +150,7 @@ namespace Database_Modification_Framework.Database
                 r => new LocConversation(r, database)
             );
         }
-        public static LocNewsEntry GetNewsEntry(string id, Enums.Databases database)
+        public static LocNewsEntry GetNewsEntry(int id, Enums.Databases database)
         {
             return ReaderToItem(
                 GetSQLDataByParam(
@@ -187,29 +189,29 @@ namespace Database_Modification_Framework.Database
                 GetSQLDataByParam(
                     database.ToString(),
                     Enums.LocRecipes.serum_id.ToString(), serumId,
-                    Enums.LocalizationTables.stashes.ToString()
+                    Enums.LocalizationTables.recipes.ToString()
                 ),
                 r => new LocRecipe(r, database)
             );
         }
-        public static LocSkillPerks GetSkillPerks(string id, Enums.Databases database)
+        public static LocSkillPerks GetSkillPerk(string id, Enums.Databases database)
         {
             return ReaderToItem(
                 GetSQLDataByParam(
                     database.ToString(),
                     Enums.LocSkillPerks.id.ToString(), id,
-                    Enums.LocalizationTables.stashes.ToString()
+                    Enums.LocalizationTables.skill_perks.ToString()
                 ),
                 r => new LocSkillPerks(r, database)
             );
         }
-        public static LocFaction GetFaction(string id, Enums.Databases database)
+        public static LocFaction GetFaction(int id, Enums.Databases database)
         {
             return ReaderToItem(
                 GetSQLDataByParam(
                     database.ToString(),
                     Enums.LocFactions.id.ToString(), id,
-                    Enums.LocalizationTables.stashes.ToString()
+                    Enums.LocalizationTables.factions.ToString()
                 ),
                 r => new LocFaction(r, database)
             );
@@ -220,18 +222,18 @@ namespace Database_Modification_Framework.Database
                 GetSQLDataByParam(
                     database.ToString(),
                     Enums.LocLvlData.id.ToString(), id,
-                    Enums.LocalizationTables.stashes.ToString()
+                    Enums.LocalizationTables.level_data.ToString()
                 ),
                 r => new LocLvlData(r, database)
             );
         }
-        public static LocTutorials GetTutorial(string id, Enums.Databases database)
+        public static LocTutorials GetTutorial(int id, Enums.Databases database)
         {
             return ReaderToItem(
                 GetSQLDataByParam(
                     database.ToString(),
                     Enums.LocTutorials.id.ToString(), id,
-                    Enums.LocalizationTables.stashes.ToString()
+                    Enums.LocalizationTables.tutorials.ToString()
                 ),
                 r => new LocTutorials(r, database)
             );

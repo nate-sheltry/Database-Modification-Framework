@@ -7,25 +7,33 @@ namespace Database_Modification_Framework.Definitions
 {
     public sealed class SlaughterhouseEnemy : SQLItem
     {
-        public string character_id;
-        public short tier;
-        public short character_type;
-        public string Comments;
+        public string CharacterId { get; set; }
+        public short Tier { get; set; }
+        public short CharacterType { get; set; }
+        public string Comments { get; set; }
+        public SlaughterhouseEnemy(object data)
+        {
+            _database = Enums.Databases.NonRegional;
+            CharacterId = GetPropValue<string>(data, "CharacterId");
+            Tier = GetPropValue<short>(data, "Tier");
+            CharacterType = GetPropValue<short>(data, "CharacterType");
+            Comments = GetPropValue<string>(data, "Comments");
+        }
         public SlaughterhouseEnemy(IDataReader reader)
         {
             _database = Enums.Databases.NonRegional;
-            character_id = reader.GetString((int)Enums.NonRegEnemy.character_id);
-            tier = reader.GetInt16((int)Enums.NonRegEnemy.tier);
-            character_type = reader.GetInt16((int)Enums.NonRegEnemy.character_type);
+            CharacterId = reader.GetString((int)Enums.NonRegEnemy.character_id);
+            Tier = reader.GetInt16((int)Enums.NonRegEnemy.tier);
+            CharacterType = reader.GetInt16((int)Enums.NonRegEnemy.character_type);
             Comments = reader.GetString((int)Enums.NonRegEnemy.Comments);
         }
         public override IDbCommand GetSqlCommand()
         {
             SqliteCommand cmd = new SqliteCommand();
             cmd.Parameters.AddRange(new IDbDataParameter[]{
-                new SqliteParameter("cid", character_id),
-                new SqliteParameter("tr", tier),
-                new SqliteParameter("ct", character_type),
+                new SqliteParameter("id", CharacterId),
+                new SqliteParameter("tr", Tier),
+                new SqliteParameter("ct", CharacterType),
                 new SqliteParameter("com", Comments),
             });
             cmd.CommandText = $@"
@@ -34,37 +42,46 @@ namespace Database_Modification_Framework.Definitions
                     {Enums.NonRegEnemy.tier.ToString()} = @tr,
                     {Enums.NonRegEnemy.character_type.ToString()} = @ct,
                     {Enums.NonRegEnemy.Comments.ToString()} = @com
-                WHERE {Enums.NonRegEnemy.character_id.ToString()} = @cid;";
+                WHERE {Enums.NonRegEnemy.character_id.ToString()} = @id;";
             return cmd;
         }
     }
     public sealed class SlaughterhouseProp : SQLItem
     {
-        public string id;
-        public short tier;
-        public int price;
-        public ItemType type;
-        public short challenge_level;
+        public string Id { get; set; }
+        public short Tier { get; set; }
+        public int Price { get; set; }
+        public ItemType Type { get; set; }
+        public short ChallengeLevel { get; set; }
+        public SlaughterhouseProp(object data)
+        {
+            _database = Enums.Databases.NonRegional;
+            Id = GetPropValue<string>(data, "Id");
+            Tier = GetPropValue<short>(data, "Tier");
+            Price = GetPropValue<int>(data, "Price");
+            Type = GetPropValue<ItemType>(data, "Type");
+            ChallengeLevel = GetPropValue<short>(data, "ChallengeLevel");
+        }
         public SlaughterhouseProp(IDataReader reader)
         {
             _database = Enums.Databases.NonRegional;
-            id = reader.GetString((int)Enums.NonRegProp.id);
-            tier = reader.GetInt16((int)Enums.NonRegProp.tier);
-            price = reader.GetInt32((int)Enums.NonRegProp.price);
+            Id = reader.GetString((int)Enums.NonRegProp.id);
+            Tier = reader.GetInt16((int)Enums.NonRegProp.tier);
+            Price = reader.GetInt32((int)Enums.NonRegProp.price);
             ItemType temp;
             Enum.TryParse(reader.GetString((int)Enums.NonRegProp.type), out temp);
-            type = temp;
-            challenge_level = reader.GetInt16((int)Enums.NonRegProp.challenge_level);
+            Type = temp;
+            ChallengeLevel = reader.GetInt16((int)Enums.NonRegProp.challenge_level);
         }
         public override IDbCommand GetSqlCommand()
         {
             SqliteCommand cmd = new SqliteCommand();
             cmd.Parameters.AddRange(new IDbDataParameter[]{
-                new SqliteParameter("id", id),
-                new SqliteParameter("tr", tier),
-                new SqliteParameter("pc", price),
-                new SqliteParameter("tp", type.ToString()),
-                new SqliteParameter("cl", challenge_level),
+                new SqliteParameter("id", Id),
+                new SqliteParameter("tr", Tier),
+                new SqliteParameter("pc", Price),
+                new SqliteParameter("tp", Type.ToString()),
+                new SqliteParameter("cl", ChallengeLevel),
             });
             cmd.CommandText = $@"
                 UPDATE {Enums.NonRegionalTables.slaughterhouse_props} 
@@ -82,61 +99,68 @@ namespace Database_Modification_Framework.Definitions
     {
         private Enums.NonRegionalTables _table;
         public override string DbTable { get => _table.ToString(); }
+        public int MaxDurability { get; set; }
         public NonRegionalItem(object data)
         {
             try
             {
                 _database = Enums.Databases.NonRegional;
                 _table = Enums.NonRegionalTables.item_attributes;
-                Id = (string)GetPropValue(data, "Id");
-                PrefabName = (string)GetPropValue(data, "PrefabName");
-                SpriteName = (string)GetPropValue(data, "SpriteName");
-                Weight = (float)GetPropValue(data, "Weight");
-                Type = (ItemType)GetPropValue(data, "Type");
-                GridCols = (short)GetPropValue(data, "GridCols");
-                GridRows = (short)GetPropValue(data, "GridRows");
-                MaxStackSize = (int)GetPropValue(data, "MaxStackSize");
-                Tier = (short)GetPropValue(data, "Tier");
-                BasePrice = (float)GetPropValue(data, "BasePrice");
-                MaxDurability = (int)GetPropValue(data, "MaxDurability");
-                Durability = (float)GetPropValue(data, "Durability");
-                UseLimit = (short)GetPropValue(data, "UseLimit");
-                IsUsable = (bool)GetPropValue(data, "IsUsable");
-                GlobalAttributes = (ItemAttributes)GetPropValue(data, "GlobalAttributes");
-                NotForSale = (bool)GetPropValue(data, "NotForSale");
-                ChallengeLevel = (short)GetPropValue(data, "ChallengeLevel");
+                Id = GetPropValue<string>(data, "Id");
+                PrefabName = GetPropValue<string>(data, "PrefabName");
+                SpriteName = GetPropValue<string>(data, "SpriteName");
+                Weight = GetPropValue<float>(data, "Weight");
+                Type = GetPropValue<ItemType>(data, "Type");
+                GridCols = GetPropValue<short>(data, "GridCols");
+                GridRows = GetPropValue<short>(data, "GridRows");
+                MaxStackSize = GetPropValue<int>(data, "MaxStackSize");
+                Tier = GetPropValue<short>(data, "Tier");
+                BasePrice = GetPropValue<float>(data, "BasePrice");
+                MaxDurability = GetPropValue<int>(data, "MaxDurability");
+                Durability = GetPropValue<float>(data, "Durability");
+                UseLimit = GetPropValue<short>(data, "UseLimit");
+                IsUsable = GetPropValue<bool>(data, "IsUsable");
+                GlobalAttributes = GetPropValue<ItemAttributes>(data, "GlobalAttributes");
+                NotForSale = GetPropValue<bool>(data, "NotForSale");
+                ChallengeLevel = GetPropValue<short>(data, "ChallengeLevel");
             }
             catch (Exception ex)
             {
                 FrameworkUtils.InternalLog(
                     LogLevel.Error,
-                    $"Failed creating a Non Regional Item object. {ex}"
+                    $"Failed creating a Non Regional Item object.\n{ex}"
                 );
             }
         }
         public NonRegionalItem(IDataReader reader)
         {
-            _database = Enums.Databases.NonRegional;
-            _table = Enums.NonRegionalTables.item_attributes;
-            Id = reader.GetString((int)Enums.NonRegItem.id);
-            PrefabName = reader.GetString((int)Enums.NonRegItem.prefab_name);
-            SpriteName = reader.GetString((int)Enums.NonRegItem.sprite_name);
-            Weight = reader.GetFloat((int)Enums.NonRegItem.weight);
-            ItemType itemType;
-            Enum.TryParse(reader.GetString((int)Enums.NonRegItem.type), false, out itemType);
-            Type = itemType;
-            GridCols = reader.GetInt16((int)Enums.NonRegItem.grid_cols);
-            GridRows = reader.GetInt16((int)Enums.NonRegItem.grid_rows);
-            MaxStackSize = reader.GetInt32((int)Enums.NonRegItem.max_stack_size);
-            Tier = reader.GetInt16((int)Enums.NonRegItem.tier);
-            BasePrice = reader.GetFloat((int)Enums.NonRegItem.base_price);
-            MaxDurability = reader.GetInt32((int)Enums.NonRegItem.max_durability);
-            Durability = reader.GetFloat((int)Enums.NonRegItem.durability);
-            UseLimit = reader.GetInt16((int)Enums.NonRegItem.use_limit);
-            IsUsable = reader.GetBoolean((int)Enums.NonRegItem.is_usable);
-            GlobalAttributes = new ItemAttributes(reader.GetString((int)Enums.NonRegItem.global_attributes));
-            NotForSale = reader.GetBoolean((int)Enums.NonRegItem.not_for_sale);
-            ChallengeLevel = reader.GetInt32((int)Enums.NonRegItem.challenge_level);
+            try
+            {
+                _database = Enums.Databases.NonRegional;
+                _table = Enums.NonRegionalTables.item_attributes;
+                Id = reader.GetString((int)Enums.NonRegItem.id);
+                PrefabName = reader.GetString((int)Enums.NonRegItem.prefab_name);
+                SpriteName = reader.GetString((int)Enums.NonRegItem.sprite_name);
+                Weight = reader.GetFloat((int)Enums.NonRegItem.weight);
+                ItemType itemType;
+                Enum.TryParse(reader.GetString((int)Enums.NonRegItem.type), false, out itemType);
+                Type = itemType;
+                GridCols = reader.GetInt16((int)Enums.NonRegItem.grid_cols);
+                GridRows = reader.GetInt16((int)Enums.NonRegItem.grid_rows);
+                MaxStackSize = reader.GetInt32((int)Enums.NonRegItem.max_stack_size);
+                Tier = reader.GetInt16((int)Enums.NonRegItem.tier);
+                BasePrice = reader.GetFloat((int)Enums.NonRegItem.base_price);
+                MaxDurability = reader.GetInt32((int)Enums.NonRegItem.max_durability);
+                Durability = reader.GetFloat((int)Enums.NonRegItem.durability);
+                UseLimit = reader.GetInt16((int)Enums.NonRegItem.use_limit);
+                IsUsable = reader.GetBoolean((int)Enums.NonRegItem.is_usable);
+                GlobalAttributes = new ItemAttributes(reader.GetString((int)Enums.NonRegItem.global_attributes));
+                NotForSale = reader.GetBoolean((int)Enums.NonRegItem.not_for_sale);
+                ChallengeLevel = reader.GetInt32((int)Enums.NonRegItem.challenge_level);
+            } catch (Exception ex)
+            {
+                FrameworkUtils.InternalLog(LogLevel.Error, $"Failed creating NonRegionalItem\n{ex}");
+            }
         }
 
         public override IDbCommand GetSqlCommand()
@@ -180,7 +204,7 @@ namespace Database_Modification_Framework.Definitions
                     global_attributes = @global_attributes,
                     not_for_sale = @not_for_sale,
                     challenge_level = @challenge_level
-                WHERE id = @id";
+                WHERE id = @id;";
             return cmd;
         }
     }

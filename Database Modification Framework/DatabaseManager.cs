@@ -42,7 +42,7 @@ namespace Database_Modification_Framework
             }
             dbPath = Path.Combine(Directories.databaseDir, dbPath);
             FrameworkUtils.InternalLog(
-                LogLevel.Debug,
+                LogLevel.Info,
                 dbPath
             );
             return new SqliteConnectionStringBuilder { DataSource = dbPath }.ConnectionString;
