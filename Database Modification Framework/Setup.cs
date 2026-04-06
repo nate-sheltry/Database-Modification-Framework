@@ -25,6 +25,7 @@ namespace Database_Modification_Framework
             try
             {
                 Directory.CreateDirectory(Directories.backupDatabase);
+                Directory.CreateDirectory(Directories.workingDatabase);
                 string[] files = Directory.GetFiles(Directories.mainDatabase) ??
                     throw new Exception(
                         $"Unable to attain database files in: {Directories.mainDatabase}"
@@ -32,12 +33,13 @@ namespace Database_Modification_Framework
                 foreach (string f in files)
                 {
                     File.Copy(f, Path.Combine(Directories.backupDatabase, Path.GetFileName(f)));
-                    string file = Path.GetFileName(f);
-                    databases.Add(file.Replace(".db",""), file);
+                    File.Copy(f, Path.Combine(Directories.workingDatabase, Path.GetFileName(f)));
+                    string file2 = Path.GetFileName(f);
+                    databases.Add(file2.Replace(".db", ""), file2);
                     //For testing
                     FrameworkUtils.InternalLog(
                         LogLevel.Info,
-                        file.Replace(".db", "")
+                        file2.Replace(".db", "")
                     );
                 }
                 FrameworkUtils.Databases = databases;
@@ -64,7 +66,7 @@ namespace Database_Modification_Framework
         public static void exit()
         {
             //If there is no backup database directory, then the cleanup succeeded
-            if (!Directory.Exists(Directories.backupDatabase))
+            if (!Directory.Exists(Directories.backupDatabase) && !Directory.Exists(Directories.workingDatabase))
                 return;
             try
             {
@@ -81,6 +83,15 @@ namespace Database_Modification_Framework
                     File.Delete(f);
                 }
                 Directory.Delete(Directories.backupDatabase);
+                string[] files2 = Directory.GetFiles(Directories.workingDatabase) ??
+                    throw new Exception(
+                        $"Was unable to attain database files in: {Directories.workingDatabase}"
+                    );
+                foreach (string f in files2)
+                {
+                    File.Delete(f);
+                }
+                Directory.Delete(Directories.workingDatabase);
             }
             catch (Exception ex)
             {

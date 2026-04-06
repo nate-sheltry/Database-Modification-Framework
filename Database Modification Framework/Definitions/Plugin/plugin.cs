@@ -9,127 +9,54 @@ namespace Database_Modification_Framework.Definitions
     // for easy data retrieval and manipulation.
     public abstract partial class DatbaseModificationPlugin : BaseUnityPlugin
     {
-        private static string ModId;
+        internal string _modId { get; set; }
+        public string ModId { get => _modId; }
+        public UtilsClass Utils;
+        public RuntimeClass Runtime;
+        public DataClass Data;
         public DatbaseModificationPlugin() {
-            ModId = Info.Metadata.Name; 
+            _modId = Info.Metadata.Name;
+            Utils = new UtilsClass(this);
+            Runtime = new RuntimeClass(this);
+            Data = new DataClass(this);
         }
-        public static partial class Data
+
+        public partial class DataClass
         {
-            private static List<T> GetEverything<T>(Func<List<T>> func)
-            where T : class
+            protected internal DatbaseModificationPlugin root;
+            public LocClass Loc;
+            public NonRegClass NonReg;
+            public DataClass(DatbaseModificationPlugin plugin)
             {
-                FrameworkUtils.RegisterMod(ModId);
-                try { return func(); }
-                catch { return new List<T>(); }
-                finally { FrameworkUtils.CleanMod(); }
-            }
-            private static List<T> GetEverything<T>(
-                Func<string, string, List<T>> func, string db, string table)
-            where T : class
-            {
-                FrameworkUtils.RegisterMod(ModId);
-                try { return func(db, table); }
-                catch { return new List<T>(); }
-                finally { FrameworkUtils.CleanMod(); }
-            }
-            private static T GetThing<T>(Func<string, T> func, string value) 
-            where T : class
-            {
-                FrameworkUtils.RegisterMod(ModId);
-                try { return func(value); }
-                catch { return null; }
-                finally { FrameworkUtils.CleanMod(); }
-            }
-            private static T GetThing<T, DEnum>(Func<string, DEnum, T> func, string value, DEnum db)
-            where T : class
-            {
-                FrameworkUtils.RegisterMod(ModId);
-                try { return func(value, db); }
-                catch { return null; }
-                finally { FrameworkUtils.CleanMod(); }
-            }
-            private static T GetThing<T, DEnum>(Func<int, DEnum, T> func, int value, DEnum db)
-            where T : class
-            {
-                FrameworkUtils.RegisterMod(ModId);
-                try { return func(value, db); }
-                catch { return null; }
-                finally { FrameworkUtils.CleanMod(); }
-            }
-            private static T GetThing<T, DEnum>(
-                Func<string, string, DEnum, T> func, string value1, string value2, DEnum db)
-            where T : class
-            {
-                FrameworkUtils.RegisterMod(ModId);
-                try { return func(value1, value2, db); }
-                catch { return null; }
-                finally { FrameworkUtils.CleanMod(); }
-            }
-            private static T GetThing<T, DEnum>(
-                Func<int, int, DEnum, T> func, int value1, int value2, DEnum db)
-            where T : class
-            {
-                FrameworkUtils.RegisterMod(ModId);
-                try { return func(value1, value2, db); }
-                catch { return null; }
-                finally { FrameworkUtils.CleanMod(); }
-            }
-            private static T GetThing<T, DEnum>(
-                Func<string, string, string, DEnum, T> func, string value1, string value2, string value3, DEnum db)
-            where T : class
-            {
-                FrameworkUtils.RegisterMod(ModId);
-                try { return func(value1, value2, value3, db); }
-                catch { return null; }
-                finally { FrameworkUtils.CleanMod(); }
-            }
-            private static List<T> GetThings<T, TEnum>(Func<List<(TEnum, object)>, List<T>> func, List<(TEnum, object)> values)
-            where T : class
-            {
-                FrameworkUtils.RegisterMod(ModId);
-                try { return func(values); }
-                catch { return new List<T>(); }
-                finally { FrameworkUtils.CleanMod(); }
-            }
-            private static List<T> GetThings<T, TEnum>(
-                Func<Enums.Databases, List<(TEnum, object)>, List<T>> func, 
-                Enums.Databases db, List<(TEnum, object)> values)
-            where T : class
-            {
-                FrameworkUtils.RegisterMod(ModId);
-                try { return func(db, values); }
-                catch { return new List<T>(); }
-                finally { FrameworkUtils.CleanMod(); }
-            }
-            private static List<T> GetThings<T>(
-                Func<Enums.Databases, List<T>> func,
-                Enums.Databases db)
-            where T : class
-            {
-                FrameworkUtils.RegisterMod(ModId);
-                try { return func(db); }
-                catch { return new List<T>(); }
-                finally { FrameworkUtils.CleanMod(); }
+                root = plugin;
+                Loc = new LocClass(this);
+                NonReg = new NonRegClass(this);
+
             }
         }
 
-        public static class Utils
+        public class UtilsClass
         {
-            public static void LogDebug(string message) => 
+            private string ModId;
+            public UtilsClass(DatbaseModificationPlugin parent)
+            {
+                ModId = parent.ModId;
+            }
+            public void LogDebug(string message) => 
                 FrameworkUtils.ExternalLog(BepInEx.Logging.LogLevel.Debug, message, ModId);
-            public static void LogInfo(string message) =>
+            public void LogInfo(string message) =>
                 FrameworkUtils.ExternalLog(BepInEx.Logging.LogLevel.Info, message, ModId);
-            public static void LogMessage(string message) =>
+            public void LogMessage(string message) =>
                 FrameworkUtils.ExternalLog(BepInEx.Logging.LogLevel.Message, message, ModId);
-            public static void LogWarning(string message, Exception ex = null) =>
+            public void LogWarning(string message, Exception ex = null) =>
                 FrameworkUtils.ExternalLog(BepInEx.Logging.LogLevel.Warning, $"{message}{(ex!= null ? $"\n{ex}":"")}", ModId);
-            public static void LogError(string message, Exception ex = null) =>
+            public void LogError(string message, Exception ex = null) =>
                 FrameworkUtils.ExternalLog(BepInEx.Logging.LogLevel.Error, $"{message}{(ex != null ? $"\n{ex}" : "")}", ModId);
-            public static void LogError(Exception ex) =>
+            public void LogError(Exception ex) =>
                 FrameworkUtils.ExternalLog(BepInEx.Logging.LogLevel.Error, ex, ModId);
-            public static void LogFatal(string message, Exception ex = null) =>
+            public void LogFatal(string message, Exception ex = null) =>
                 FrameworkUtils.ExternalLog(BepInEx.Logging.LogLevel.Fatal, $"{message}{(ex != null ? $"\n{ex}" : "")}", ModId);
-            public static void LogFatal(Exception ex) =>
+            public void LogFatal(Exception ex) =>
                 FrameworkUtils.ExternalLog(BepInEx.Logging.LogLevel.Fatal, ex, ModId);
         }
 

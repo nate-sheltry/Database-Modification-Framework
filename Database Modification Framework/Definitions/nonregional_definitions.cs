@@ -2,6 +2,8 @@
 using Mono.Data.Sqlite;
 using System;
 using System.Data;
+using static Database_Modification_Framework.FrameworkUtils;
+
 
 namespace Database_Modification_Framework.Definitions
 {
@@ -14,6 +16,7 @@ namespace Database_Modification_Framework.Definitions
         public SlaughterhouseEnemy(object data)
         {
             _database = Enums.Databases.NonRegional;
+            _table = Enums.NonRegionalTables.slaughterhouse_enemies;
             CharacterId = GetPropValue<string>(data, "CharacterId");
             Tier = GetPropValue<short>(data, "Tier");
             CharacterType = GetPropValue<short>(data, "CharacterType");
@@ -22,6 +25,7 @@ namespace Database_Modification_Framework.Definitions
         public SlaughterhouseEnemy(IDataReader reader)
         {
             _database = Enums.Databases.NonRegional;
+            _table = Enums.NonRegionalTables.slaughterhouse_enemies;
             CharacterId = reader.GetString((int)Enums.NonRegEnemy.character_id);
             Tier = reader.GetInt16((int)Enums.NonRegEnemy.tier);
             CharacterType = reader.GetInt16((int)Enums.NonRegEnemy.character_type);
@@ -37,7 +41,7 @@ namespace Database_Modification_Framework.Definitions
                 new SqliteParameter("com", Comments),
             });
             cmd.CommandText = $@"
-                UPDATE {Enums.NonRegionalTables.slaughterhouse_enemies} 
+                UPDATE {DbTable} 
                 SET 
                     {Enums.NonRegEnemy.tier.ToString()} = @tr,
                     {Enums.NonRegEnemy.character_type.ToString()} = @ct,
@@ -56,6 +60,7 @@ namespace Database_Modification_Framework.Definitions
         public SlaughterhouseProp(object data)
         {
             _database = Enums.Databases.NonRegional;
+            _table = Enums.NonRegionalTables.slaughterhouse_props;
             Id = GetPropValue<string>(data, "Id");
             Tier = GetPropValue<short>(data, "Tier");
             Price = GetPropValue<int>(data, "Price");
@@ -65,6 +70,7 @@ namespace Database_Modification_Framework.Definitions
         public SlaughterhouseProp(IDataReader reader)
         {
             _database = Enums.Databases.NonRegional;
+            _table = Enums.NonRegionalTables.slaughterhouse_props;
             Id = reader.GetString((int)Enums.NonRegProp.id);
             Tier = reader.GetInt16((int)Enums.NonRegProp.tier);
             Price = reader.GetInt32((int)Enums.NonRegProp.price);
@@ -84,7 +90,7 @@ namespace Database_Modification_Framework.Definitions
                 new SqliteParameter("cl", ChallengeLevel),
             });
             cmd.CommandText = $@"
-                UPDATE {Enums.NonRegionalTables.slaughterhouse_props} 
+                UPDATE {DbTable} 
                 SET 
                     {Enums.NonRegProp.tier.ToString()} = @tr,
                     {Enums.NonRegProp.price.ToString()} = @pc,
@@ -97,8 +103,6 @@ namespace Database_Modification_Framework.Definitions
     // The Non Regional Item Table Datatype
     public sealed class NonRegionalItem : BaseItem
     {
-        private Enums.NonRegionalTables _table;
-        public override string DbTable { get => _table.ToString(); }
         public int MaxDurability { get; set; }
         public NonRegionalItem(object data)
         {

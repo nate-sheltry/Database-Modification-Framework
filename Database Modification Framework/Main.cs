@@ -1,14 +1,18 @@
 ﻿using BepInEx;
+using HarmonyLib;
+using UnityEngine;
 
 namespace Database_Modification_Framework
 {
     [BepInPlugin(MyGUID, PluginName, VersionString)]
-    public class Main : BaseUnityPlugin
+    internal class Main : BaseUnityPlugin
     {
         //Plugin Information
         private const string MyGUID = "tunguska.natesheltry.database_modification_framework.modplugin";
         private const string PluginName = "Database Modification Framework";
-        private const string VersionString = "0.0.1";
+        private const string VersionString = "0.0.4";
+        private float _syncTimer = 0f;
+        const float SyncInterval = 2f;
 
         //Runs on Executable launch
         public void Awake()
@@ -27,10 +31,20 @@ namespace Database_Modification_Framework
         //    Utils.Log.LogMessage("Framework performing SQL process.");
         //    Database.UpdateItemByID(sqlItem.Database, sqlItem.GetSQLString());
         //}
-
+        public void Start()
+        {
+            // Add game's current language to frequent database table.
+            DatabaseManager.freqDb.Add($"Main{GameManager.Inst.Language}");
+        }
         public void Update()
         {
             Framework.InvokeSQL();
+            _syncTimer += Time.deltaTime;
+            if(_syncTimer >= SyncInterval)
+            {
+                _syncTimer = 0f;
+                SqlExecutor.UpdateGameDatabases();
+            }
         }
 
         //Runs on Executable's exit/close

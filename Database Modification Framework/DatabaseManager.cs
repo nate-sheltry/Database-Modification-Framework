@@ -6,19 +6,22 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Security;
 
 namespace Database_Modification_Framework
 {
     internal static class DatabaseManager
     {
-        private static Dictionary<string, IDbConnection> _connections = new Dictionary<string, IDbConnection>();
+        private static Dictionary<string, IDbConnection> _workingConnections = new Dictionary<string, IDbConnection>();
+        private static Dictionary<string, IDbConnection> _gameConnections = new Dictionary<string, IDbConnection>();
         // Use Hashset for Frequent Database list because we can afford
         // the overhead for setup and the reduce computation for lookup during runtime.
-        public static readonly HashSet<string> freqDb = new HashSet<string>{
+        internal static HashSet<string> freqDb = new HashSet<string>{
             Files.NonRegional,
         };
-        public static IReadOnlyDictionary<string, IDbConnection> Connections => _connections;
-        private static string GetDatabaseConnectionString(string key)
+        public static IReadOnlyDictionary<string, IDbConnection> WorkingConnections => _workingConnections;
+        public static IReadOnlyDictionary<string, IDbConnection> GameConnections => _gameConnections;
+        private static string GetDatabaseConnectionString(string key, string dir)
         {
             string dbPath = null;
             if (FrameworkUtils.Databases is null)
@@ -40,16 +43,16 @@ namespace Database_Modification_Framework
                 );
                 return null;
             }
-            dbPath = Path.Combine(Directories.databaseDir, dbPath);
+            dbPath = Path.Combine(dir, dbPath);
             FrameworkUtils.InternalLog(
                 LogLevel.Info,
                 dbPath
             );
-            return new SqliteConnectionStringBuilder { DataSource = dbPath }.ConnectionString;
+            return new SqliteConnectionStringBuilder { DataSource = dbPath }.ConnectionString+";";
         }
-        private static IDbConnection EstablishConnection(string dbName)
+        private static IDbConnection EstablishConnection(string dbName, string dir)
         {
-            string connectionString = GetDatabaseConnectionString(dbName);
+            string connectionString = GetDatabaseConnectionString(dbName, dir);
             if (connectionString == null)
             {
                 FrameworkUtils.InternalLog(
@@ -85,10 +88,11 @@ namespace Database_Modification_Framework
             {
                 try
                 {
-                    _connections.Add(key, EstablishConnection(key));
-                    // Establish a open connection and maintain it to reduce
-                    // computational cost during runtime for some slight overhead.
-                    _connections[key].Open();
+                    _workingConnections.Add(key, EstablishConnection(key, Directories.workingDatabase));
+                    _workingConnections[key].Open();
+
+                    _gameConnections.Add(key, EstablishConnection(key, Directories.mainDatabase));
+                    _gameConnections[key].Open();
                     // Removes thes from our all database files list.
                     otherDbs.Remove(key);
                 }
@@ -112,7 +116,8 @@ namespace Database_Modification_Framework
             {
                 try
                 {
-                    _connections.Add(key, EstablishConnection(key));
+                    _workingConnections.Add(key, EstablishConnection(key, Directories.workingDatabase));
+                    _gameConnections.Add(key, EstablishConnection(key, Directories.mainDatabase));
                 }
                 catch (Exception ex)
                 {
@@ -130,7 +135,23 @@ namespace Database_Modification_Framework
         public static void CloseConnections()
         {
             {
-                foreach (KeyValuePair<string, IDbConnection> kvp in Connections)
+                foreach (KeyValuePair<string, IDbConnection> kvp in WorkingConnections)
+                {
+                    try
+                    {
+                        if (kvp.Value == null) continue;
+                        kvp.Value.Close();
+                        kvp.Value.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        FrameworkUtils.InternalLog(
+                            LogLevel.Error,
+                            $"Failed to close Database: {kvp.Key}"
+                        );
+                    }
+                }
+                foreach (KeyValuePair<string, IDbConnection> kvp in GameConnections)
                 {
                     try
                     {

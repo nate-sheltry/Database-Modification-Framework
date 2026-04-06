@@ -1,4 +1,5 @@
 ﻿using BepInEx.Logging;
+using Database_Modification_Framework.Database;
 using Mono.Data.Sqlite;
 using System;
 using System.Collections.Generic;
@@ -12,18 +13,21 @@ using UnityEngine.Diagnostics;
 using UnityEngine.EventSystems;
 using UnityStandardAssets.Water;
 using static Mono.Security.X509.X520;
+using static Database_Modification_Framework.FrameworkUtils;
 
 namespace Database_Modification_Framework.Definitions
 {
-    public abstract class LocSQLItem : SQLItem, ILocSQLItem
+    public abstract class LocSQLItem : SQLItem
     {
-        protected internal Enums.LocalizationTables _table { get; set; }
-        public string DbTable { get => _table.ToString(); }
         internal virtual void SetUpObject(object data)
         {
             try
             {
                 _database = GetPropValue<Enums.Databases>(data, "_database");
+                if(!Enums.LocalizationDatabases.Contains(_database))
+                {
+                    throw new ArgumentException("Wrong DatabaseType, must be a \"Main\" database value.");
+                }    
             }
             catch (Exception ex)
             {
@@ -38,6 +42,10 @@ namespace Database_Modification_Framework.Definitions
             try
             {
                 _database = db;
+                if (!Enums.LocalizationDatabases.Contains(_database))
+                {
+                    throw new ArgumentException("Wrong DatabaseType, must be a Main database value.");
+                }
             }
             catch (Exception ex)
             {
@@ -1018,10 +1026,8 @@ namespace Database_Modification_Framework.Definitions
     //        return cmd;
     //    }
     //}
-    public class LocBaseItem : BaseItem, ILocSQLItem
+    public sealed class LocBaseItem : BaseItem
     {
-        protected internal Enums.LocalizationTables _table { get; set; }
-        public override string DbTable { get => _table.ToString(); }
         public string Name { get; set; }
         public string Description { get; set; }
         public float MaxDurability { get; set; }

@@ -5,6 +5,12 @@ VisualStudioVersion = 17.14.36623.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database Modification Framework", "Database Modification Framework\Database Modification Framework.csproj", "{6B7925B0-EA51-4FB0-B4A3-DE8B07595E38}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Framework_Tester", "Database Modification Framework\Framework_Tester.csproj", "{ABCD4AF0-BDA5-45A6-9F33-278E83F2CA76}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynamicTestMod", "Database Modification Framework\DynamicTestMod.csproj", "{D33C0CB1-394E-439F-AE05-C702D4D88678}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTMod", "Database Modification Framework\DTMod.csproj", "{76D96AB7-F618-4C4D-B76B-D25F25F4E29C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,6 +20,18 @@ Global
 		{6B7925B0-EA51-4FB0-B4A3-DE8B07595E38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6B7925B0-EA51-4FB0-B4A3-DE8B07595E38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B7925B0-EA51-4FB0-B4A3-DE8B07595E38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABCD4AF0-BDA5-45A6-9F33-278E83F2CA76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABCD4AF0-BDA5-45A6-9F33-278E83F2CA76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABCD4AF0-BDA5-45A6-9F33-278E83F2CA76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABCD4AF0-BDA5-45A6-9F33-278E83F2CA76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D33C0CB1-394E-439F-AE05-C702D4D88678}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D33C0CB1-394E-439F-AE05-C702D4D88678}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D33C0CB1-394E-439F-AE05-C702D4D88678}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D33C0CB1-394E-439F-AE05-C702D4D88678}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76D96AB7-F618-4C4D-B76B-D25F25F4E29C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76D96AB7-F618-4C4D-B76B-D25F25F4E29C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76D96AB7-F618-4C4D-B76B-D25F25F4E29C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76D96AB7-F618-4C4D-B76B-D25F25F4E29C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

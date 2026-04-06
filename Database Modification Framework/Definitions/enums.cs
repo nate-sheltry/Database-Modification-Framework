@@ -1,8 +1,23 @@
 ﻿
+using System.Collections.Generic;
+
 namespace Database_Modification_Framework.Definitions
 {
     public static class Enums
     {
+        internal static readonly HashSet<Enums.Databases> LocalizationDatabases =
+            new HashSet<Enums.Databases>
+            {
+                Enums.Databases.Main,
+                Enums.Databases.MainCH,
+                Enums.Databases.MainFR,
+                Enums.Databases.MainGER,
+                Enums.Databases.MainITA,
+                Enums.Databases.MainRUS,
+                Enums.Databases.MainSPA,
+                Enums.Databases.MainUA,
+
+            };
         public enum Databases
         {
             AI = 0,

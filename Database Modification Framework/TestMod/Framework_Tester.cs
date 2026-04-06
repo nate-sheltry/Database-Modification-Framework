@@ -91,7 +91,8 @@ namespace Framework_Tester
             }
             if (recoveryTest == null && Framework.CheckQueueAmount() == 0)
             {
-                Utils.LogMessage($"Running Recovery Tests - Errors will be Logged.\n");
+                Utils.LogMessage($"Running Recovery Tests - Errors will be Logged.\n"+
+                    ">>> Should be 1 error followed by an Info Log.\n");
                 RecoveryTests();
                 recoveryTest = false;
             }
@@ -111,6 +112,10 @@ namespace Framework_Tester
             {
                 conditions.Add(TestNonRegItem(item));
             }
+            var item1 = Data.NonReg.GetItem("huntingshotgun");
+            conditions.Add(item1 != null);
+            var locitem = item1.GetLocalizationData(Enums.Databases.Main);
+            conditions.Add(locitem != null);
             return !conditions.Contains(false);
         }
         public bool NonRegMultiTest()
@@ -338,17 +343,36 @@ namespace Framework_Tester
                 conditions.Add(Data.NonReg.GetProps(new List<(Enums.NonRegProp, object)>
                     { }
                     ).Count == 0);
+            Utils.LogInfo("Get Error occurred, Flow not interrupted.");
                 conditions.Add(Data.Loc.GetBaseItems(Enums.Databases.Main,
                     new List<(Enums.LocBaseItems, object)>{ }).Count == 0);
+            Utils.LogInfo("Get Error occurred, Flow not interrupted.");
+            // Wrong Database Test on LocItem
+                conditions.Add(Data.Loc.GetBaseItems(Enums.Databases.NonRegional,
+                    new List<(Enums.LocBaseItems, object)> { }).Count == 0);
+            Utils.LogInfo("Get Error occurred, Flow not interrupted.");
 
             // Framework Execute Errors
+                new RawSQLItem(Enums.Databases.NonRegional, "sdsdsdsdsd").Sync();
+                new RawSQLItem(Enums.Databases.Main, "sdsdsdsdsd").Sync();
                 new RawSQLItem(Enums.Databases.MainITA, "sdsdsdsdsd").Sync();
 
             // Proper Execute Queues (Should run after erroring)
-                Data.NonReg.GetProp("ammo762_39").Sync();
-                Data.Loc.GetBaseItem("huntingshotgun", Enums.Databases.Main);
-                Data.Loc.GetBaseItem("huntingshotgun", Enums.Databases.MainITA).Sync();
-
+            {            
+                var item = Data.NonReg.GetProp("ammo762_39");
+                conditions.Add(item != null);
+                item.Sync();
+            }
+            {
+                var item = Data.Loc.GetBaseItem("huntingshotgun", Enums.Databases.Main);
+                conditions.Add(item != null);
+                item.Sync();
+            }
+            {
+                var item = Data.Loc.GetBaseItem("huntingshotgun", Enums.Databases.MainITA);
+                conditions.Add(item != null);
+                item.Sync();
+            }
             return !conditions.Contains(false);
         }
     }

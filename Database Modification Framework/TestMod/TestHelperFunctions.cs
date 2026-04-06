@@ -16,15 +16,12 @@ namespace Framework_Tester
             {
                 case NonRegionalItem x:
                     new NonRegionalItem(x);
-                    Utils.LogInfo("Successfully casted item as NonRegional Item.");
                     return true;
                 case SlaughterhouseEnemy x:
                     new SlaughterhouseEnemy(x);
-                    Utils.LogInfo("Successfully casted item as Slaughterhouse Enemy.");
                     return true;
                 case SlaughterhouseProp x:
                     new SlaughterhouseProp(x);
-                    Utils.LogInfo("Successfully casted item as Slaughterhouse Prop.");
                     return true;
                 default:
                     Utils.LogError("Failed to cast item to any NonRegional Type.");
@@ -37,62 +34,43 @@ namespace Framework_Tester
             {
                 case LocBaseItem x:
                     new LocBaseItem(x);
-                    Utils.LogInfo("Successfully casted item as LocBaseItem.");
                     return true;
                 case LocGlobalResp x:
                     new LocGlobalResp(x);
-                    Utils.LogInfo("Successfully casted item as LocGlobalResp .");
                     return true;
                 case LocJrnlEntry x:
-                    Utils.LogInfo("Successfully casted item as LocJrnlEntry.");
                     return true;
                 case LocFactRel x:
-                    Utils.LogInfo("Successfully casted item as LocFactRel.");
                     return true;
                 case LocStoryConTrigger x:
-                    Utils.LogInfo("Successfully casted item as LocStoryConTrigger .");
                     return true;
                 case LocNotePaper x:
-                    Utils.LogInfo("Successfully casted item as LocNotePaper.");
                     return true;
                 case LocEnvSounds x:
-                    Utils.LogInfo("Successfully casted item as LocEnvSounds.");
                     return true;
                 case LocTaskData x:
-                    Utils.LogInfo("Successfully casted item as LocTaskData .");
                     return true;
                 case LocInitSquads x:
-                    Utils.LogInfo("Successfully casted item as LocInitSquads.");
                     return true;
                 case LocPresetChar x:
-                    Utils.LogInfo("Successfully casted item as LocPresetChar.");
                     return true;
                 case LocConversation x:
-                    Utils.LogInfo("Successfully casted item as LocConversation .");
                     return true;
                 case LocNewsEntry x:
-                    Utils.LogInfo("Successfully casted item as LocNewsEntry.");
                     return true;
                 case LocStoryConItem x:
-                    Utils.LogInfo("Successfully casted item as LocStoryConItem .");
                     return true;
                 case LocStash x:
-                    Utils.LogInfo("Successfully casted item as LocStash.");
                     return true;
                 case LocRecipe x:
-                    Utils.LogInfo("Successfully casted item as LocRecipe.");
                     return true;
                 case LocSkillPerks x:
-                    Utils.LogInfo("Successfully casted item as LocSkillPerks .");
                     return true;
                 case LocFaction x:
-                    Utils.LogInfo("Successfully casted item as LocFaction.");
                     return true;
                 case LocLvlData x:
-                    Utils.LogInfo("Successfully casted item as LocLvlData .");
                     return true;
                 case LocTutorials x:
-                    Utils.LogInfo("Successfully casted item as LocTutorials.");
                     return true;
                 default:
                     Utils.LogError("Failed to cast item to any NonRegional Type.");

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using UnityEngine;
 
@@ -98,5 +99,55 @@ namespace Database_Modification_Framework
         }
         internal static List<(string, object)> ConvertEnumsToStrings<Tenum>(List<(Tenum, object)> items)
             => items.Select(x => (x.Item1.ToString(), x.Item2)).ToList();
+        internal static T GetPropValue<T>(object obj, string propName)
+        {
+            if (obj == null)
+            {
+                FrameworkUtils.InternalLog(
+                    LogLevel.Error,
+                    $"Null object was cast into class SQL definition."
+                );
+                throw new ArgumentNullException("Null object was cast into class SQL definition.");
+            }
+            Type targetType = typeof(T);
+            // This might (not sure) be able to be implemented via a Preloader
+            // However, BepInEx does not support dynamic for plugins.
+            // Utilizing dynamic even for primitive types would help
+            // decrease comput time dramatically.
+            //try
+            //{
+            //    dynamic dynamicObj = obj;
+            //    dynamic rawValue = dynamicObj[propName];
+            //    return (T)Convert.ChangeType(rawValue, targetType);
+            //}
+            //catch
+            //{
+            //    FrameworkUtils.InternalLog(
+            //        LogLevel.Info,
+            //        "Failed direct access when getting property value.\n"+
+            //        $"Falling back to reflection for Property : {propName}"
+            //    );
+            //}
+            var prop = obj.GetType().GetProperty(propName,
+                BindingFlags.NonPublic |
+                BindingFlags.Instance |
+                BindingFlags.Public);
+            if (prop == null)
+            {
+                FrameworkUtils.InternalLog(LogLevel.Warning, $"Property '{propName}' not found");
+                return default;
+            }
+            var value = prop.GetValue(obj);
+            if (value == null) return default;
+            try
+            {
+                return (T)Convert.ChangeType(value, targetType);
+            }
+            catch (Exception ex)
+            {
+                FrameworkUtils.InternalLog(LogLevel.Error, $"Cast fail '{propName}': {value.GetType()} -> {typeof(T)}: {ex.Message}");
+                return default;
+            }
+        }
     }
 }

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6B7925B0-EA51-4FB0-B4A3-DE8B07595E38}</ProjectGuid>
+    <ProjectGuid>{76D96AB7-F618-4C4D-B76B-D25F25F4E29C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Database_Modification_Framework</RootNamespace>
-    <AssemblyName>Database Modification Framework</AssemblyName>
+    <RootNamespace>DTMod</RootNamespace>
+    <AssemblyName>DTMod</AssemblyName>
     <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -97,19 +97,7 @@
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Tunguska The Visitation\Tunguska_Data\Managed\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.EnterpriseServices" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.ServiceModel.Internals, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Tunguska The Visitation\Tunguska_Data\Managed\System.ServiceModel.Internals.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -346,32 +334,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Database\all_localization.cs" />
-    <Compile Include="Database\multi_localization.cs" />
-    <Compile Include="Definitions\Plugin\helper_functions.cs" />
-    <Compile Include="Definitions\Plugin\runtime.cs" />
-    <Compile Include="Definitions\Plugin\data_nonregional.cs" />
-    <Compile Include="Definitions\Plugin\data_localization.cs" />
-    <Compile Include="FrameworkUtils.cs" />
-    <Compile Include="RuntimeData.cs" />
-    <Compile Include="SqlExecutor.cs" />
-    <Compile Include="Database\single_localization.cs" />
-    <Compile Include="DatabaseManager.cs" />
-    <Compile Include="Database\nonregional.cs" />
-    <Compile Include="Definitions\attribute_definitions.cs" />
-    <Compile Include="Definitions\enums.cs" />
-    <Compile Include="Definitions\localization_definitions.cs" />
-    <Compile Include="Definitions\nonregional_definitions.cs" />
-    <Compile Include="Definitions\Plugin\plugin.cs" />
-    <Compile Include="Framework.cs" />
-    <Compile Include="Setup.cs" />
-    <Compile Include="Definitions\general_definitions.cs" />
-    <Compile Include="Main.cs" />
+    <Compile Include="DTMod\Mod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="Database Modification Framework.csproj">
+      <Project>{6b7925b0-ea51-4fb0-b4a3-de8b07595e38}</Project>
+      <Name>Database Modification Framework</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

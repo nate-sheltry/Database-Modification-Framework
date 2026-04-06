@@ -17,17 +17,6 @@ namespace Database_Modification_Framework
 {
     public static class Framework
     {
-        //public struct SQLItem
-        //{
-        //    public SQLItem(string db, string sqlString)
-        //    {
-        //        database = db;
-        //        sql = sqlString;
-        //    }
-        //    public string database { get; }
-        //    public string sql { get; }
-        //    public string GetSQL;
-        //}
 
         //Perhaps make a specialized container of queues
         //We'll sort SQL by databases in order to maximize performance.
@@ -43,7 +32,7 @@ namespace Database_Modification_Framework
 
             public static void Initialize()
             {
-                foreach(string db in DatabaseManager.Connections.Keys)
+                foreach(string db in DatabaseManager.WorkingConnections.Keys)
                 {
                     dict.Add(db, new Queue<ISQLItem>());
                 }
@@ -108,6 +97,9 @@ namespace Database_Modification_Framework
                     // select non-regional queued items first for batched operations.
                     if (dict.TryGetValue(Files.NonRegional, out nonRegional))
                     {
+                        //IDbConnection con = null;
+                        //DatabaseManager.Connections.TryGetValue(Enums.Databases.NonRegional.ToString(), out con);
+                        //con.
                         while(nonRegional.Count > 0 && lists.Count < FrameworkUtils.MAX_TX)
                             lists.Add(Dequeue(nonRegional));
                     }
@@ -133,10 +125,14 @@ namespace Database_Modification_Framework
                 // repeated and unnecessary database connection opens.
                 if (Count < 1)
                 {
-                    foreach(string key in DatabaseManager.Connections.Keys.ToList())
+                    FrameworkUtils.InternalLog(
+                        BepInEx.Logging.LogLevel.Info,
+                        $"Finished modifying working database."
+                    );
+                    foreach (string key in DatabaseManager.WorkingConnections.Keys.ToList())
                     {
                         if (!DatabaseManager.freqDb.Contains(key))
-                            DatabaseManager.Connections[key].Close();
+                            DatabaseManager.WorkingConnections[key].Close();
                     }
                 }
             }

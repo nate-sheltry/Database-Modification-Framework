@@ -24,8 +24,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocBaseItems, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.base_items.ToString()
                 ),
@@ -36,8 +36,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocGlobResp, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.global_dialogue_response.ToString()
                 ),
@@ -48,8 +48,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocJrnlEntries, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.journal_entries.ToString()
                 ),
@@ -60,8 +60,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocFactionRel, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.faction_relationships.ToString()
                 ),
@@ -72,8 +72,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocNotePapers, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.note_papers.ToString()
                 ),
@@ -84,8 +84,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocEnvSounds, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.environment_sounds.ToString()
                 ),
@@ -96,8 +96,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocTaskData, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.task_data.ToString()
                 ),
@@ -108,8 +108,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocInitSquads, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.initial_squads.ToString()
                 ),
@@ -120,8 +120,8 @@ namespace Database_Modification_Framework.Database
         //    Enums.Databases database, List<(Enums.LocPresetChar, object)> values)
         //{
         //    return ReaderToItems(
-        //        GetSQLDataByParams(
-        //            database.ToString(),
+        //        GetLocSQLDataByParams(
+        //            database,
         //            ConvertEnumsToStrings(values),
         //            Enums.LocalizationTables.preset_characters.ToString()
         //        ),
@@ -132,8 +132,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocConvos, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.conversation.ToString()
                 ),
@@ -144,8 +144,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocNewsEntries, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.news_entries.ToString()
                 ),
@@ -156,8 +156,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocStoryConItems, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.story_conditions_item.ToString()
                 ),
@@ -168,8 +168,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocStoryConTriggers, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.story_conditions_trigger.ToString()
                 ),
@@ -180,8 +180,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocSkillPerks, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.skill_perks.ToString()
                 ),
@@ -192,8 +192,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocStashes, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.stashes.ToString()
                 ),
@@ -204,8 +204,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocRecipes, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.recipes.ToString()
                 ),
@@ -216,8 +216,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocFactions, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.factions.ToString()
                 ),
@@ -228,8 +228,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocLvlData, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.level_data.ToString()
                 ),
@@ -240,8 +240,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database, List<(Enums.LocTutorials, object)> values)
         {
             return ReaderToItems(
-                GetSQLDataByParams(
-                    database.ToString(),
+                GetLocSQLDataByParams(
+                    database,
                     ConvertEnumsToStrings(values),
                     Enums.LocalizationTables.tutorials.ToString()
                 ),

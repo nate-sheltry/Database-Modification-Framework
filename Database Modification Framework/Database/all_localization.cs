@@ -23,8 +23,8 @@ namespace Database_Modification_Framework.Database
         public static List<LocBaseItem> GetAllBaseItems(Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.base_items.ToString()
                 ),
                 r => new LocBaseItem(r, database)
@@ -34,8 +34,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.global_dialogue_response.ToString()
                 ),
                 r => new LocGlobalResp(r, database)
@@ -45,8 +45,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.journal_entries.ToString()
                 ),
                 r => new LocJrnlEntry(r, database)
@@ -56,8 +56,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.faction_relationships.ToString()
                 ),
                 r => new LocFactRel(r, database)
@@ -67,8 +67,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.note_papers.ToString()
                 ),
                 r => new LocNotePaper(r, database)
@@ -78,8 +78,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.environment_sounds.ToString()
                 ),
                 r => new LocEnvSounds(r, database)
@@ -89,8 +89,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.task_data.ToString()
                 ),
                 r => new LocTaskData(r, database)
@@ -100,8 +100,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.initial_squads.ToString()
                 ),
                 r => new LocInitSquads(r, database)
@@ -112,7 +112,7 @@ namespace Database_Modification_Framework.Database
         //{
         //    return ReaderToItems(
         //        GetSQLDataByParams(
-        //            database.ToString(),
+        //            database,
         //            ConvertEnumsToStrings(values),
         //            Enums.LocalizationTables.preset_characters.ToString()
         //        ),
@@ -123,8 +123,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.conversation.ToString()
                 ),
                 r => new LocConversation(r, database)
@@ -134,8 +134,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.news_entries.ToString()
                 ),
                 r => new LocNewsEntry(r, database)
@@ -145,8 +145,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.story_conditions_item.ToString()
                 ),
                 r => new LocStoryConItem(r, database)
@@ -156,8 +156,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.story_conditions_trigger.ToString()
                 ),
                 r => new LocStoryConTrigger(r, database)
@@ -167,8 +167,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.skill_perks.ToString()
                 ),
                 r => new LocSkillPerks(r, database)
@@ -178,8 +178,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.stashes.ToString()
                 ),
                 r => new LocStash(r, database)
@@ -189,8 +189,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.recipes.ToString()
                 ),
                 r => new LocRecipe(r, database)
@@ -200,8 +200,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.factions.ToString()
                 ),
                 r => new LocFaction(r, database)
@@ -211,8 +211,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.level_data.ToString()
                 ),
                 r => new LocLvlData(r, database)
@@ -222,8 +222,8 @@ namespace Database_Modification_Framework.Database
             Enums.Databases database)
         {
             return ReaderToItems(
-                GetAllSQLDataByTable(
-                    database.ToString(),
+                GetAllLocSQLDataByTable(
+                    database,
                     Enums.LocalizationTables.tutorials.ToString()
                 ),
                 r => new LocTutorials(r, database)
