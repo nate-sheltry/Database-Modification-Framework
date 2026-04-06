@@ -17,6 +17,12 @@ namespace Database_Modification_Framework
 {
     public static class Framework
     {
+        private static List<bool> hasErroredThisCycle = new List<bool>();
+        public static bool AnyErrorThisCycle { get {
+                bool temp = !hasErroredThisCycle.TrueForAll(x => x == false);
+                hasErroredThisCycle.Clear();
+                return temp;
+            } }
 
         //Perhaps make a specialized container of queues
         //We'll sort SQL by databases in order to maximize performance.
@@ -92,7 +98,8 @@ namespace Database_Modification_Framework
                 keys.Remove(Files.NonRegional);
 
                 Queue<ISQLItem> nonRegional;
-                while(lists.Count < FrameworkUtils.MAX_TX)
+                bool error = false;
+                while (lists.Count < FrameworkUtils.MAX_TX)
                 {
                     // select non-regional queued items first for queued operations.
                     if (dict.TryGetValue(Files.NonRegional, out nonRegional))
@@ -109,6 +116,7 @@ namespace Database_Modification_Framework
                         Queue<ISQLItem> queue;
                         if(!dict.TryGetValue(key, out queue))
                         {
+                            error = true;
                             FrameworkUtils.InternalLog(
                                 LogLevel.Error, 
                                 $"Failed to acces commands for {key} database."
@@ -120,7 +128,11 @@ namespace Database_Modification_Framework
                     }
                     break;
                 }
-                SqlExecutor.ExecuteCommand(lists);
+                try 
+                {
+                    if (!SqlExecutor.ExecuteCommand(lists))
+                        error = true;
+                } catch { error = true; }
                 // Infrequent connections are closed here to avoid
                 // repeated and unnecessary database connection opens.
                 if (Count < 1)
@@ -135,6 +147,7 @@ namespace Database_Modification_Framework
                             DatabaseManager.WorkingConnections[key].Close();
                     }
                 }
+                hasErroredThisCycle.Add(error);
             }
         }
 

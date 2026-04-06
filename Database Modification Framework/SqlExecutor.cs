@@ -337,15 +337,16 @@ namespace Database_Modification_Framework
             }
         }
 
-        internal static void ExecuteCommand(List<ISQLItem> items)
+        internal static bool ExecuteCommand(List<ISQLItem> items)
         {
+            bool noErrors = true;
             if (items?.Count == 0)
             {
                 FrameworkUtils.InternalLog(
                     BepInEx.Logging.LogLevel.Error,
                     "Database commands Failed to prepare to execute."
                 );
-                return;
+                return false;
             }
             foreach (ISQLItem item in items)
             {
@@ -362,6 +363,7 @@ namespace Database_Modification_Framework
                             BepInEx.Logging.LogLevel.Error,
                             $"Database:{item.Database} Connection does not exist."
                         );
+                        noErrors = false;
                         continue;
                     }
                     if (connection?.State != ConnectionState.Open)
@@ -396,6 +398,7 @@ namespace Database_Modification_Framework
                             $"Failed to execute SQLite Command for {item.Database} database.\n{ex}",
                             item.ModId
                         );
+                        noErrors = false;
                     }
                     finally
                     {
@@ -404,6 +407,7 @@ namespace Database_Modification_Framework
                     }
                 }
             }
+            return noErrors;
         }
         internal static void UpdateGameDatabases()
         {

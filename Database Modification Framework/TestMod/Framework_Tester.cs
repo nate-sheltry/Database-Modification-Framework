@@ -22,6 +22,8 @@ namespace Framework_Tester
         private const string VersionString = "0.0.5";
         internal bool? recoveryTest = null;
         internal bool?[] tests = new bool?[]{null, null, null};
+        internal List<bool> trackErrorBool = new List<bool>();
+        internal List<bool?> testResults = new List<bool?>() { null, null, null };
         internal static bool Pass1 = false;
         internal static bool Pass2 = false;
         internal static bool Pass3 = false;
@@ -34,16 +36,23 @@ namespace Framework_Tester
             Utils.LogMessage("\n\nYou should see no Red (errors) while the test is running, except at the end.\n"+
                 "Yellow are warnings and may be appropriate.\n"+
                 "To fully verify the test was successful you must have your DebugLevel to 4 in the config\n"+
-                "And have Info Logging enabled in BepInEx.");
+                "And have Info Logging enabled in BepInEx.\n\n");
             Thread.Sleep(10000);
         }
         public void Update()
         {
+            // Currently doing shoddy Bool logic and reading to verify no errors.
+            // Framework should be updated to use a listener, which the Framework
+            // invokes when an error occurs.
+            trackErrorBool.Add(Framework.AnyErrorThisCycle);
             if (tests[0] == false && Framework.CheckQueueAmount() == 0)
             {
+                Utils.LogMessage($"Cycles This Test: {trackErrorBool.Count}");
+                testResults[0] = trackErrorBool.TrueForAll(x => x == false);
+                trackErrorBool.Clear();
                 tests[0] = true;
             }
-            if (tests[0] == null && Framework.CheckQueueAmount() == 0)
+            else if (tests[0] == null && Framework.CheckQueueAmount() == 0)
             {
                 Pass1 = NonRegionalTests();
                 if (!Pass1)
@@ -52,11 +61,14 @@ namespace Framework_Tester
                     Utils.LogMessage($"Passed NonRegional TestOn Get/Client side: {Pass1}");
                 tests[0] = false;
             }
-            if (tests[1] == false && Framework.CheckQueueAmount() == 0)
+            if (tests[1] == false && tests[0] == true && Framework.CheckQueueAmount() == 0)
             {
+                Utils.LogMessage($"Cycles This Test: {trackErrorBool.Count}");
+                testResults[1] = trackErrorBool.TrueForAll(x => x == false);
+                trackErrorBool.Clear();
                 tests[1] = true;
             }
-            if (tests[1] == null && Framework.CheckQueueAmount() == 0)
+            else if (tests[1] == null && tests[0] == true && Framework.CheckQueueAmount() == 0)
             {
                 Pass2 = LocalizationTests();
                 if (!Pass2)
@@ -65,11 +77,14 @@ namespace Framework_Tester
                     Utils.LogMessage($"Passed Localization TestOn Get/Client side: {Pass2}");
                 tests[1] = false;
             }
-            if (tests[2] == false && Framework.CheckQueueAmount() == 0)
+            if (tests[2] == false && tests[1] == true && Framework.CheckQueueAmount() == 0)
             {
+                Utils.LogMessage($"Cycles This Test: {trackErrorBool.Count}");
+                testResults[2] = trackErrorBool.TrueForAll(x => x ==false);
+                trackErrorBool.Clear();
                 tests[2] = true;
             }
-            if (tests[2] == null && Framework.CheckQueueAmount() == 0)
+            else if (tests[2] == null && tests[1] == true && Framework.CheckQueueAmount() == 0)
             {
                 Pass3 = NullTest();
                 if (!Pass3)
@@ -78,18 +93,18 @@ namespace Framework_Tester
                     Utils.LogMessage($"Passed Null TestOn Get/Client side: {Pass3}");
                 tests[2] = false;
             }
-            if (recoveryTest == false && Framework.CheckQueueAmount() == 0)
+            if (recoveryTest == false && tests[2] == true && Framework.CheckQueueAmount() == 0)
             {
-                if ((bool)tests[0] && Pass1)
+                if ((bool)testResults[0] && Pass1)
                     Utils.LogMessage("Non Regional Test: PASSED");
-                if ((bool)tests[1] && Pass2)
+                if ((bool)testResults[1] && Pass2)
                     Utils.LogMessage("Localization Test: PASSED");
-                if ((bool)tests[2] && Pass3)
+                if ((bool)testResults[2] && Pass3)
                     Utils.LogMessage("Null Test: PASSED");
                 Utils.LogMessage($"Recovery Test: PASSED");
                 recoveryTest = true;
             }
-            if (recoveryTest == null && Framework.CheckQueueAmount() == 0)
+            else if (recoveryTest == null && tests[2] == true && Framework.CheckQueueAmount() == 0)
             {
                 Utils.LogMessage($"Running Recovery Tests - Errors will be Logged.\n"+
                     ">>> Should be 1 error followed by an Info Log.\n");
