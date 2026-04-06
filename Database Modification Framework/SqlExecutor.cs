@@ -87,8 +87,6 @@ namespace Database_Modification_Framework
             try
             {
                 cmd.CommandText = $@"SELECT * FROM {table};";
-                FrameworkUtils.InternalLog(LogLevel.Info,
-                    $"{cmd.CommandText} \n- Retrieving all SQL data for {table} in {database}.");
                 reader = cmd.ExecuteReader();
                 return reader;
             }
@@ -147,7 +145,6 @@ namespace Database_Modification_Framework
                     cmd.Parameters.Add(new SqliteParameter("value", value));
                     cmd.CommandText = $@"SELECT * FROM {table} WHERE {param} = @value;";
                 }
-                FrameworkUtils.InternalLog(LogLevel.Info, $"{cmd.CommandText} - Value: {value}");
                 reader = cmd.ExecuteReader();
                 return reader;
             }
@@ -212,8 +209,6 @@ namespace Database_Modification_Framework
                     }
                 }
                 cmd.CommandText += string.Join("AND", conditions) + ";";
-                FrameworkUtils.InternalLog(LogLevel.Info,
-                    $"{cmd.CommandText} - {string.Join(" - ",paramValues.Select(p => $"{p.Item1}:{p.Item2}"))}");
                 reader = cmd.ExecuteReader();
                 return reader;
             }
@@ -239,10 +234,6 @@ namespace Database_Modification_Framework
                     return null;
                 if (dataReader.Read())
                     return factory(dataReader);
-                FrameworkUtils.InternalLog(
-                    LogLevel.Info,
-                    $"Reader had no data."
-                );
                 return null;
             }
             catch (Exception ex)
@@ -310,7 +301,6 @@ namespace Database_Modification_Framework
             try
             {
                 cmd.CommandText = _sql;
-                FrameworkUtils.InternalLog(LogLevel.Info, $"{cmd.CommandText}");
                 reader = cmd.ExecuteReader();
                 reader.Read();
                 return reader.GetString(0);

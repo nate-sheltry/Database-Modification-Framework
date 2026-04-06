@@ -94,7 +94,7 @@ namespace Database_Modification_Framework
                 Queue<ISQLItem> nonRegional;
                 while(lists.Count < FrameworkUtils.MAX_TX)
                 {
-                    // select non-regional queued items first for batched operations.
+                    // select non-regional queued items first for queued operations.
                     if (dict.TryGetValue(Files.NonRegional, out nonRegional))
                     {
                         //IDbConnection con = null;
@@ -103,7 +103,7 @@ namespace Database_Modification_Framework
                         while(nonRegional.Count > 0 && lists.Count < FrameworkUtils.MAX_TX)
                             lists.Add(Dequeue(nonRegional));
                     }
-                    // select all other database items for batching.
+                    // select all other database items for queueing.
                     foreach (string key in keys)
                     {
                         Queue<ISQLItem> queue;
