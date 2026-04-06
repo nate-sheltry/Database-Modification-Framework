@@ -8,7 +8,7 @@ namespace Database_Modification_Framework
     internal class Main : BaseUnityPlugin
     {
         //Plugin Information
-        private const string MyGUID = "tunguska.natesheltry.database_modification_framework.modplugin";
+        internal const string MyGUID = "tunguska.natesheltry.database_modification_framework.modplugin";
         private const string PluginName = "Database Modification Framework";
         private const string VersionString = "0.0.4";
         private float _syncTimer = 0f;

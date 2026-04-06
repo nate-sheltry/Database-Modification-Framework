@@ -11,7 +11,7 @@ namespace Framework_Tester
 {
     [BepInPlugin(MyGUID, PluginName, VersionString)]
     [BepInDependency(
-        "tunguska.natesheltry.database_modification_framework.modplugin",
+        FrameworkGUID,
         BepInDependency.DependencyFlags.HardDependency
     )]
     public partial class Main : DatbaseModificationPlugin

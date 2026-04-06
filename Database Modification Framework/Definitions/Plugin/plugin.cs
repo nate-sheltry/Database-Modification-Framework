@@ -9,6 +9,7 @@ namespace Database_Modification_Framework.Definitions
     // for easy data retrieval and manipulation.
     public abstract partial class DatbaseModificationPlugin : BaseUnityPlugin
     {
+        public const string FrameworkGUID = Main.MyGUID;
         internal string _modId { get; set; }
         public string ModId { get => _modId; }
         public UtilsClass Utils;

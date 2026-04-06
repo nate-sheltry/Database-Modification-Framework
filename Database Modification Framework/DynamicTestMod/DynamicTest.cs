@@ -20,7 +20,7 @@ namespace DynamicTestMod
 
     [BepInPlugin(MyGUID, PluginName, VersionString)]
     [BepInDependency(
-    "tunguska.natesheltry.database_modification_framework.modplugin",
+    FrameworkGUID,
     BepInDependency.DependencyFlags.HardDependency
 )]
     public class DynamicTest : DatbaseModificationPlugin
