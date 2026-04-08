@@ -1,7 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
-using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using System.IO;

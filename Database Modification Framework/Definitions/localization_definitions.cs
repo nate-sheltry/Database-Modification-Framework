@@ -1,18 +1,9 @@
 ﻿using BepInEx.Logging;
-using Database_Modification_Framework.Database;
 using Mono.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Windows.Markup;
-using TMPro;
-using Unity.VisualScripting;
-using UnityEngine.Diagnostics;
-using UnityEngine.EventSystems;
-using UnityStandardAssets.Water;
-using static Mono.Security.X509.X520;
 using static Database_Modification_Framework.FrameworkUtils;
 
 namespace Database_Modification_Framework.Definitions

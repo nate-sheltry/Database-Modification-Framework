@@ -1,18 +1,11 @@
-﻿using BepInEx;
-using BepInEx.Logging;
-using Database_Modification_Framework.Database;
+﻿using Database_Modification_Framework.Database;
 using Mono.Data.Sqlite;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Animations;
 using static Database_Modification_Framework.Definitions.Enums;
 using static Database_Modification_Framework.FrameworkUtils;
 

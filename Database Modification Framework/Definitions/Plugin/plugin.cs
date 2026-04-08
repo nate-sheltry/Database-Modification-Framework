@@ -1,7 +1,6 @@
 ﻿using BepInEx;
 using Database_Modification_Framework.Database;
 using System;
-using System.Collections.Generic;
 
 namespace Database_Modification_Framework.Definitions
 {

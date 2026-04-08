@@ -1,10 +1,6 @@
 ﻿using Database_Modification_Framework.Definitions;
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Database_Modification_Framework.SqlExecutor;
 
 namespace Database_Modification_Framework.Database

@@ -1,17 +1,8 @@
-﻿using BepInEx;
-using BepInEx.Bootstrap;
-using BepInEx.Logging;
+﻿using BepInEx.Logging;
 using Database_Modification_Framework.Definitions;
-using Mono.Data.Sqlite;
-using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Database_Modification_Framework
 {

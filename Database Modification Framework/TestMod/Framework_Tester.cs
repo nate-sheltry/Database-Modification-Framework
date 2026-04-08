@@ -1,10 +1,7 @@
 ﻿using BepInEx;
-using BepInEx.Logging;
 using Database_Modification_Framework;
 using Database_Modification_Framework.Definitions;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 
 namespace Framework_Tester
