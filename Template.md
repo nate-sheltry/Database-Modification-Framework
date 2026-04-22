@@ -6,7 +6,7 @@ The following is some template/example code for utilizing the Framework for deve
 using BepInEx;
 using Database_Modification_Framework.Definitions;
 
-namespace YourModsName
+namespace YourModsNamespace
 {
     // I call this "Mod", but you can call this anything.
     // This is a static class for referencing your plugin
