@@ -41,7 +41,7 @@ This architecture provides high compatibility between different database-modifyi
     - Delete working database
     - Overwrite in-use database with backup database
 
-### Making a BepInEx plugin utilizing the Framework
+## Making a BepInEx plugin utilizing the Framework
 
 I recommend using Visual Studio for an IDE. Your project will need the following references.
 
