@@ -1,5 +1,5 @@
 # Database Modification Framework - For Tunguska: The Visitation
-A BepInEx plugin for *Tunguska: The Visitation*, designed to modify database data at startup and during runtime.
+A [BepInEx](https://github.com/BepInEx/BepInEx) plugin for *[Tunguska: The Visitation](https://store.steampowered.com/app/1601970/Tunguska_The_Visitation__Final_Cut/)*, designed to modify database data at startup and during runtime.
 
 ## Definitions
 
