@@ -64,4 +64,4 @@ These assemblies can typically be found within the following directories:
 - `Tunguska The Visitation/Tunguska_Data/Managed/`
 - `BepInEx/core/`
 
-For a simple example on implementing the framework into your own BepInEx plugins, check the `Template.md` file.
+For a simple example on implementing the framework into your own BepInEx plugins, check the [Template](https://github.com/nate-sheltry/Database-Modification-Framework/blob/Graduation/Template.md) file.
